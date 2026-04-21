@@ -31,9 +31,7 @@
         }
         .is-dark .glow-bg { opacity: 0.25; filter: blur(150px); }
 
-        @media (min-width: 1024px) {
-            .hero-title { font-size: 4rem !important; }
-        }
+        @media (min-width: 1024px) { .hero-title { font-size: 4rem !important; } }
     </style>
 </head>
 <body class="min-h-screen flex flex-col overflow-hidden"
@@ -55,15 +53,13 @@
             
             <div class="flex items-center gap-2 md:gap-4">
                 <button @click="toggleLang" class="px-4 py-2 rounded-full font-bold text-sm border transition shadow-sm hover:scale-105" :style="`border-color: ${currentBtn}; color: ${currentBtn}`" x-text="lang === 'ar' ? 'EN' : 'عربي'"></button>
-                <button @click="toggleDarkMode" class="w-10 h-10 rounded-full flex items-center justify-center border transition shadow-sm hover:rotate-12" :style="`border-color: ${currentBtn}; color: ${currentBtn}`" x-text="isDark ? '☀️' : '🌙'"></button>
+                <button @click="toggleDarkMode" class="w-10 h-10 rounded-full flex items-center justify-center border transition shadow-sm" :style="`border-color: ${currentBtn}; color: ${currentBtn}`" x-text="isDark ? '☀️' : '🌙'"></button>
             </div>
         </div>
     </header>
 
     <div class="flex flex-col md:flex-row flex-1 overflow-hidden">
-        <aside class="w-full md:w-[320px] lg:w-[350px] flex-shrink-0 border-b md:border-b-0 md:border-x flex overflow-x-auto md:overflow-y-auto md:flex-col hide-scrollbar p-3 md:p-5 gap-3 md:gap-4 z-40 relative backdrop-blur-md"
-               style="border-color: rgba(128, 128, 128, 0.1);">
-            
+        <aside class="w-full md:w-[320px] lg:w-[350px] flex-shrink-0 border-b md:border-b-0 md:border-x flex overflow-x-auto md:overflow-y-auto md:flex-col hide-scrollbar p-3 md:p-5 gap-3 md:gap-4 z-40" style="border-color: rgba(128, 128, 128, 0.1);">
             <template x-for="p in palettes" :key="p.id">
                 <button @click="currentPalette = p"
                         class="flex-shrink-0 w-32 md:w-full p-3 md:p-4 rounded-2xl border transition-all duration-300 relative overflow-hidden text-start"
@@ -75,10 +71,9 @@
             </template>
         </aside>
 
-        <main class="flex-1 overflow-y-auto p-4 md:p-8 relative">
+        <main class="flex-1 overflow-y-auto p-4 md:p-8">
             <div class="max-w-5xl mx-auto space-y-10">
-                
-                <section class="text-center py-10 space-y-6">
+                <section class="text-center py-10">
                     <h2 class="hero-title text-4xl md:text-7xl font-black leading-tight">
                         <span x-text="lang === 'ar' ? 'صمم بذكاء' : 'Vibe Coding'"></span> <br>
                         <span class="text-transparent bg-clip-text" :style="`background-image: linear-gradient(to left, ${currentPalette.grad.from}, ${currentPalette.grad.to})`"
@@ -89,45 +84,33 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-10">
                     <div class="space-y-6">
                         <div class="p-6 rounded-3xl border shadow-sm backdrop-blur-md" style="border-color: rgba(128,128,128,0.15); background: rgba(128,128,128,0.05)">
-                            <h3 class="font-bold mb-4 opacity-70">UI Components</h3>
                             <div class="flex flex-wrap gap-3">
                                 <button class="px-6 py-3 rounded-xl font-bold text-white shadow-lg" :style="`background: linear-gradient(to right, ${currentPalette.grad.from}, ${currentPalette.grad.to})`">Primary</button>
                                 <button class="px-6 py-3 rounded-xl font-bold border-2" :style="`border-color: ${currentBtn}; color: ${currentBtn}`">Outline</button>
-                                <button class="px-6 py-3 rounded-xl font-bold bg-red-500 text-white">Action</button>
                             </div>
                         </div>
-
-                        <div class="rounded-3xl border overflow-hidden backdrop-blur-md" style="border-color: rgba(128,128,128,0.15); background: rgba(128,128,128,0.05)">
-                            <div class="p-4 border-b font-bold flex justify-between" style="border-color: rgba(128,128,128,0.1)">
-                                <span x-text="lang === 'ar' ? 'إحصائيات النظام' : 'System Stats'"></span>
-                                <span class="text-green-500">Live</span>
-                            </div>
-                            <div class="p-5 space-y-4">
-                                <div class="w-full bg-gray-500 bg-opacity-10 h-2 rounded-full overflow-hidden"><div class="h-full" :style="`background: ${currentBtn}; width: 70%`"></div></div>
-                                <div class="w-full bg-gray-500 bg-opacity-10 h-2 rounded-full overflow-hidden"><div class="h-full" :style="`background: ${currentPalette.grad.to}; width: 45%`"></div></div>
-                            </div>
+                        <div class="rounded-3xl border overflow-hidden backdrop-blur-md p-5 space-y-4" style="border-color: rgba(128,128,128,0.15); background: rgba(128,128,128,0.05)">
+                            <div class="w-full bg-gray-500 bg-opacity-10 h-2 rounded-full overflow-hidden"><div class="h-full" :style="`background: ${currentBtn}; width: 70%`"></div></div>
                         </div>
                     </div>
-
                     <div class="p-8 rounded-[2.5rem] border-2 flex flex-col justify-between backdrop-blur-sm" :style="`border-color: ${currentPalette.grad.from}44; background: ${currentPalette.grad.from}05`">
                         <div class="space-y-6">
                             <div class="h-48 rounded-3xl shadow-2xl" :style="`background: linear-gradient(135deg, ${currentPalette.grad.from}, ${currentPalette.grad.to})`"></div>
-                            <h4 class="text-2xl font-black">Visual Experience</h4>
-                            <p class="opacity-70 leading-relaxed">This is a real-world preview of how your interface elements will respond to the selected palette. Perfectly balanced for readability.</p>
+                            <h4 class="text-2xl font-black">AI Experience</h4>
                         </div>
                     </div>
                 </div>
 
-                <section class="p-10 border-t flex flex-col md:flex-row items-center justify-between gap-6" style="border-color: rgba(128, 128, 128, 0.1);">
-                    <div class="text-center md:text-start">
-                        <h3 class="font-bold text-2xl mb-2" x-text="lang === 'ar' ? 'نسخ البرومبت' : 'Copy AI Prompt'"></h3>
-                        <p class="opacity-60 text-sm" x-text="lang === 'ar' ? 'انسخ الألوان للوضع الليلي والنهاري بضغطة واحدة.' : 'One click to copy Light & Dark mode settings.'"></p>
+                <section class="p-10 border-t text-center space-y-6" style="border-color: rgba(128, 128, 128, 0.1);">
+                    <div class="text-center">
+                        <h3 class="font-bold text-2xl mb-2" x-text="lang === 'ar' ? 'نسخ البرومبت الذكي' : 'Copy Smart Prompt'"></h3>
+                        <p class="opacity-60 text-sm" x-text="lang === 'ar' ? 'انسخ الوصف الكامل ليشرح للذكاء الاصطناعي كيفية تطبيق التصميم.' : 'Copy full guide to teach AI how to apply the design.'"></p>
                     </div>
                     <button @click="copyPrompt" 
                             class="w-full md:w-auto px-16 py-5 rounded-2xl font-black text-xl shadow-2xl transition-all"
                             :class="copySuccess ? 'bg-green-600 text-white animate-bounce' : 'text-white'"
                             :style="!copySuccess ? `background: ${currentBtn}` : ''">
-                        <span x-text="copySuccess ? 'Copied!' : (lang === 'ar' ? 'نسخ الكود' : 'Copy Now')"></span>
+                        <span x-text="copySuccess ? 'Copied Successfully!' : (lang === 'ar' ? 'نسخ البرومبت المتكامل' : 'Copy Smart Prompt')"></span>
                     </button>
                 </section>
             </div>
@@ -177,7 +160,6 @@
                     { id: 36, nameAr: 'نعناع نيون', nameEn: 'Neon Mint', light: { bg: '#FAFAFA', text: '#171717', btn: '#14B8A6' }, dark: { bg: '#0A0A0A', text: '#FAFAFA', btn: '#2DD4BF' }, grad: { from: '#0D9488', to: '#5EEAD4' } },
                     { id: 37, nameAr: 'شعاب مرجانية', nameEn: 'Coral Reef', light: { bg: '#FFF1F2', text: '#881337', btn: '#F43F5E' }, dark: { bg: '#1A0208', text: '#FFE4E6', btn: '#FB7185' }, grad: { from: '#E11D48', to: '#FDA4AF' } },
                     { id: 38, nameAr: 'شفق المساء', nameEn: 'Evening Twilight', light: { bg: '#F8FAFC', text: '#0F172A', btn: '#8B5CF6' }, dark: { bg: '#050510', text: '#F8FAFC', btn: '#A78BFA' }, grad: { from: '#7C3AED', to: '#C4B5FD' } },
-                    { id: 39, nameAr: 'فستق حلبي', nameEn: 'Pistachio', light: { bg: '#F0FDF4', text: '#14532D', btn: '#22C55E' }, dark: { bg: '#021A0A', text: '#DCFCE7', btn: '#4ADE80' }, grad: { from: '#16A34A', to: '#86EFAC' } },
                     { id: 40, nameAr: 'أسود وذهب', nameEn: 'Black & Gold', light: { bg: '#FAFAFA', text: '#000000', btn: '#D97706' }, dark: { bg: '#000000', text: '#FFFFFF', btn: '#F59E0B' }, grad: { from: '#B45309', to: '#FCD34D' } },
                     { id: 41, nameAr: 'أميثيست', nameEn: 'Amethyst', light: { bg: '#FAF5FF', text: '#4C1D95', btn: '#7C3AED' }, dark: { bg: '#1A052E', text: '#F3E8FF', btn: '#8B5CF6' }, grad: { from: '#6D28D9', to: '#A78BFA' } },
                     { id: 42, nameAr: 'بطيخ منعش', nameEn: 'Fresh Watermelon', light: { bg: '#FFF1F2', text: '#831843', btn: '#F43F5E' }, dark: { bg: '#1A020D', text: '#FFE4E6', btn: '#FB7185' }, grad: { from: '#E11D48', to: '#FDA4AF' } },
@@ -193,7 +175,27 @@
                 get currentBtn() { return this.isDark ? this.currentPalette.dark.btn : this.currentPalette.light.btn; },
                 copyPrompt() {
                     const p = this.currentPalette;
-                    let text = `AI Palette Prompt:\nLight: BG ${p.light.bg}, Text ${p.light.text}, Btn ${p.light.btn}\nDark: BG ${p.dark.bg}, Text ${p.dark.text}, Btn ${p.dark.btn}\nGradient: ${p.grad.from} to ${p.grad.to}`;
+                    const text = `
+Act as a professional UI/UX Developer. Please apply the following visual identity to my project with specific attention to the "Glow Aesthetic":
+
+1. **Color Variables**:
+   - Light Mode: BG [${p.light.bg}], Text [${p.light.text}], Primary [${p.light.btn}]
+   - Dark Mode: BG [${p.dark.bg}], Text [${p.dark.text}], Primary [${p.dark.btn}]
+   - Accents: Gradient From [${p.grad.from}] To [${p.grad.to}]
+
+2. **The "Glow Aura" Effect**:
+   - Implement a fixed background element (z-index: -1).
+   - Style: Radial gradient using accent colors, positioned at center.
+   - Effect: Apply 120px blur. 
+   - Opacity: 15% in Light Mode, 25% in Dark Mode.
+
+3. **UI Implementation**:
+   - Use the Primary color for main buttons and progress bars.
+   - Apply a 500ms smooth transition for all background and text color changes.
+   - Containers should have 2xl to 3xl rounded corners with subtle backdrop-blur (10px).
+
+4. **Tone**: Modern, high-end "Vibe Coding" aesthetic. Ensure high contrast for readability.
+`;
                     navigator.clipboard.writeText(text).then(() => {
                         this.copySuccess = true;
                         setTimeout(() => this.copySuccess = false, 2500);
