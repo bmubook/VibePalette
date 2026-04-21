@@ -14,7 +14,6 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.3); border-radius: 10px; }
         
-        /* تأثير التوهج الملحمي */
         .glow-bg {
             position: fixed;
             top: 50%;
@@ -30,7 +29,6 @@
             transition: all 0.8s ease-in-out;
         }
         .is-dark .glow-bg { opacity: 0.25; filter: blur(150px); }
-
         @media (min-width: 1024px) { .hero-title { font-size: 4rem !important; } }
     </style>
 </head>
@@ -50,9 +48,8 @@
                 🎨 <span class="tracking-tight">VibePalette</span> 
                 <span class="text-sm opacity-60" x-text="`(${palettes.length})`"></span>
             </h1>
-            
             <div class="flex items-center gap-2 md:gap-4">
-                <button @click="toggleLang" class="px-4 py-2 rounded-full font-bold text-sm border transition shadow-sm hover:scale-105" :style="`border-color: ${currentBtn}; color: ${currentBtn}`" x-text="lang === 'ar' ? 'EN' : 'عربي'"></button>
+                <button @click="toggleLang" class="px-4 py-2 rounded-full font-bold text-sm border transition shadow-sm" :style="`border-color: ${currentBtn}; color: ${currentBtn}`" x-text="lang === 'ar' ? 'EN' : 'عربي'"></button>
                 <button @click="toggleDarkMode" class="w-10 h-10 rounded-full flex items-center justify-center border transition shadow-sm" :style="`border-color: ${currentBtn}; color: ${currentBtn}`" x-text="isDark ? '☀️' : '🌙'"></button>
             </div>
         </div>
@@ -73,11 +70,11 @@
 
         <main class="flex-1 overflow-y-auto p-4 md:p-8">
             <div class="max-w-5xl mx-auto space-y-10">
-                <section class="text-center py-10">
-                    <h2 class="hero-title text-4xl md:text-7xl font-black leading-tight">
-                        <span x-text="lang === 'ar' ? 'صمم بذكاء' : 'Vibe Coding'"></span> <br>
+                <section class="text-center py-6">
+                    <h2 class="hero-title text-4xl md:text-6xl font-black leading-tight">
+                        <span x-text="lang === 'ar' ? 'صمم واجهاتك بـ' : 'Design your UI with'"></span> <br>
                         <span class="text-transparent bg-clip-text" :style="`background-image: linear-gradient(to left, ${currentPalette.grad.from}, ${currentPalette.grad.to})`"
-                              x-text="lang === 'ar' ? 'بألوان متناسقة' : 'With AI Colors'"></span>
+                              x-text="lang === 'ar' ? 'فايب احترافي' : 'Professional Vibe'"></span>
                     </h2>
                 </section>
 
@@ -89,29 +86,37 @@
                                 <button class="px-6 py-3 rounded-xl font-bold border-2" :style="`border-color: ${currentBtn}; color: ${currentBtn}`">Outline</button>
                             </div>
                         </div>
-                        <div class="rounded-3xl border overflow-hidden backdrop-blur-md p-5 space-y-4" style="border-color: rgba(128,128,128,0.15); background: rgba(128,128,128,0.05)">
-                            <div class="w-full bg-gray-500 bg-opacity-10 h-2 rounded-full overflow-hidden"><div class="h-full" :style="`background: ${currentBtn}; width: 70%`"></div></div>
+                        <div class="rounded-3xl border overflow-hidden backdrop-blur-md p-5" style="border-color: rgba(128,128,128,0.15); background: rgba(128,128,128,0.05)">
+                             <div class="w-full bg-gray-500 bg-opacity-10 h-2 rounded-full overflow-hidden"><div class="h-full" :style="`background: ${currentBtn}; width: 65%`"></div></div>
                         </div>
                     </div>
                     <div class="p-8 rounded-[2.5rem] border-2 flex flex-col justify-between backdrop-blur-sm" :style="`border-color: ${currentPalette.grad.from}44; background: ${currentPalette.grad.from}05`">
-                        <div class="space-y-6">
-                            <div class="h-48 rounded-3xl shadow-2xl" :style="`background: linear-gradient(135deg, ${currentPalette.grad.from}, ${currentPalette.grad.to})`"></div>
-                            <h4 class="text-2xl font-black">AI Experience</h4>
-                        </div>
+                        <div class="h-40 rounded-3xl shadow-2xl mb-4" :style="`background: linear-gradient(135deg, ${currentPalette.grad.from}, ${currentPalette.grad.to})`"></div>
+                        <h4 class="text-xl font-black" x-text="lang === 'ar' ? 'معاينة حية' : 'Live Preview'"></h4>
                     </div>
                 </div>
 
-                <section class="p-10 border-t text-center space-y-6" style="border-color: rgba(128, 128, 128, 0.1);">
+                <section class="p-8 border-t space-y-8" style="border-color: rgba(128, 128, 128, 0.1);">
                     <div class="text-center">
-                        <h3 class="font-bold text-2xl mb-2" x-text="lang === 'ar' ? 'نسخ البرومبت الذكي' : 'Copy Smart Prompt'"></h3>
-                        <p class="opacity-60 text-sm" x-text="lang === 'ar' ? 'انسخ الوصف الكامل ليشرح للذكاء الاصطناعي كيفية تطبيق التصميم.' : 'Copy full guide to teach AI how to apply the design.'"></p>
+                        <h3 class="font-bold text-2xl mb-4" x-text="lang === 'ar' ? 'خيارات النسخ للذكاء الاصطناعي' : 'AI Copy Options'"></h3>
                     </div>
-                    <button @click="copyPrompt" 
-                            class="w-full md:w-auto px-16 py-5 rounded-2xl font-black text-xl shadow-2xl transition-all"
-                            :class="copySuccess ? 'bg-green-600 text-white animate-bounce' : 'text-white'"
-                            :style="!copySuccess ? `background: ${currentBtn}` : ''">
-                        <span x-text="copySuccess ? 'Copied Successfully!' : (lang === 'ar' ? 'نسخ البرومبت المتكامل' : 'Copy Smart Prompt')"></span>
-                    </button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+                        <button @click="copyFullPrompt" 
+                                class="p-6 rounded-3xl border-2 transition-all hover:-translate-y-1 flex flex-col items-center gap-2 shadow-xl"
+                                :class="copyFullSuccess ? 'bg-green-600 border-transparent text-white' : ''"
+                                :style="!copyFullSuccess ? `border-color: ${currentBtn}; color: ${currentBtn}` : ''">
+                            <span class="font-black text-lg" x-text="copyFullSuccess ? 'Copied Full Prompt!' : (lang === 'ar' ? 'نسخ البرومبت المتكامل' : 'Copy Smart Prompt')"></span>
+                            <span class="text-xs opacity-70" x-text="lang === 'ar' ? '(الألوان + التوهج + أسلوب التصميم)' : '(Colors + Glow + UI Style)'"></span>
+                        </button>
+
+                        <button @click="copyColorsOnly" 
+                                class="p-6 rounded-3xl border-2 transition-all hover:-translate-y-1 flex flex-col items-center gap-2 shadow-xl"
+                                :class="copyColorSuccess ? 'bg-blue-600 border-transparent text-white' : ''"
+                                :style="!copyColorSuccess ? `border-color: ${currentBtn}; color: ${currentBtn}` : ''">
+                            <span class="font-black text-lg" x-text="copyColorSuccess ? 'Colors Copied!' : (lang === 'ar' ? 'نسخ الألوان فقط' : 'Copy Colors Only')"></span>
+                            <span class="text-xs opacity-70" x-text="lang === 'ar' ? '(رموز الهكس للنهاري والليلي)' : '(Hex codes only)'"></span>
+                        </button>
+                    </div>
                 </section>
             </div>
         </main>
@@ -120,7 +125,7 @@
     <script>
         function themePreview() {
             return {
-                isDark: true, lang: 'ar', currentPalette: null, copySuccess: false,
+                isDark: true, lang: 'ar', currentPalette: null, copyFullSuccess: false, copyColorSuccess: false,
                 palettes: [
                     { id: 1, nameAr: 'شروق الشمس', nameEn: 'Warm Sunrise', light: { bg: '#FFF7ED', text: '#431407', btn: '#EA580C' }, dark: { bg: '#0D0804', text: '#FFEDD5', btn: '#F97316' }, grad: { from: '#EA580C', to: '#FBA918' } },
                     { id: 2, nameAr: 'غابة الزمرد', nameEn: 'Emerald Forest', light: { bg: '#F0FDF4', text: '#064E3B', btn: '#10B981' }, dark: { bg: '#020D0A', text: '#D1FAE5', btn: '#34D399' }, grad: { from: '#059669', to: '#34D399' } },
@@ -160,6 +165,7 @@
                     { id: 36, nameAr: 'نعناع نيون', nameEn: 'Neon Mint', light: { bg: '#FAFAFA', text: '#171717', btn: '#14B8A6' }, dark: { bg: '#0A0A0A', text: '#FAFAFA', btn: '#2DD4BF' }, grad: { from: '#0D9488', to: '#5EEAD4' } },
                     { id: 37, nameAr: 'شعاب مرجانية', nameEn: 'Coral Reef', light: { bg: '#FFF1F2', text: '#881337', btn: '#F43F5E' }, dark: { bg: '#1A0208', text: '#FFE4E6', btn: '#FB7185' }, grad: { from: '#E11D48', to: '#FDA4AF' } },
                     { id: 38, nameAr: 'شفق المساء', nameEn: 'Evening Twilight', light: { bg: '#F8FAFC', text: '#0F172A', btn: '#8B5CF6' }, dark: { bg: '#050510', text: '#F8FAFC', btn: '#A78BFA' }, grad: { from: '#7C3AED', to: '#C4B5FD' } },
+                    { id: 39, nameAr: 'فستق حلبي', nameEn: 'Pistachio', light: { bg: '#F0FDF4', text: '#14532D', btn: '#22C55E' }, dark: { bg: '#021A0A', text: '#DCFCE7', btn: '#4ADE80' }, grad: { from: '#16A34A', to: '#86EFAC' } },
                     { id: 40, nameAr: 'أسود وذهب', nameEn: 'Black & Gold', light: { bg: '#FAFAFA', text: '#000000', btn: '#D97706' }, dark: { bg: '#000000', text: '#FFFFFF', btn: '#F59E0B' }, grad: { from: '#B45309', to: '#FCD34D' } },
                     { id: 41, nameAr: 'أميثيست', nameEn: 'Amethyst', light: { bg: '#FAF5FF', text: '#4C1D95', btn: '#7C3AED' }, dark: { bg: '#1A052E', text: '#F3E8FF', btn: '#8B5CF6' }, grad: { from: '#6D28D9', to: '#A78BFA' } },
                     { id: 42, nameAr: 'بطيخ منعش', nameEn: 'Fresh Watermelon', light: { bg: '#FFF1F2', text: '#831843', btn: '#F43F5E' }, dark: { bg: '#1A020D', text: '#FFE4E6', btn: '#FB7185' }, grad: { from: '#E11D48', to: '#FDA4AF' } },
@@ -173,32 +179,29 @@
                 get currentBg() { return this.isDark ? this.currentPalette.dark.bg : this.currentPalette.light.bg; },
                 get currentText() { return this.isDark ? this.currentPalette.dark.text : this.currentPalette.light.text; },
                 get currentBtn() { return this.isDark ? this.currentPalette.dark.btn : this.currentPalette.light.btn; },
-                copyPrompt() {
+                
+                // نسخ البرومبت الكامل
+                copyFullPrompt() {
                     const p = this.currentPalette;
-                    const text = `
-Act as a professional UI/UX Developer. Please apply the following visual identity to my project with specific attention to the "Glow Aesthetic":
+                    const text = `Act as a UI/UX Developer. Apply this theme:
+- Light Mode: BG [${p.light.bg}], Text [${p.light.text}], Primary [${p.light.btn}]
+- Dark Mode: BG [${p.dark.bg}], Text [${p.dark.text}], Primary [${p.dark.btn}]
+- Gradient: From [${p.grad.from}] To [${p.grad.to}]
+- Visual Effect: Add a fixed background radial-glow (Blur: 120px, Opacity: 20%).`;
+                    this.doCopy(text, 'full');
+                },
 
-1. **Color Variables**:
-   - Light Mode: BG [${p.light.bg}], Text [${p.light.text}], Primary [${p.light.btn}]
-   - Dark Mode: BG [${p.dark.bg}], Text [${p.dark.text}], Primary [${p.dark.btn}]
-   - Accents: Gradient From [${p.grad.from}] To [${p.grad.to}]
+                // نسخ الألوان فقط
+                copyColorsOnly() {
+                    const p = this.currentPalette;
+                    const text = `Light: ${p.light.bg}, ${p.light.text}, ${p.light.btn} | Dark: ${p.dark.bg}, ${p.dark.text}, ${p.dark.btn} | Grad: ${p.grad.from}-${p.grad.to}`;
+                    this.doCopy(text, 'color');
+                },
 
-2. **The "Glow Aura" Effect**:
-   - Implement a fixed background element (z-index: -1).
-   - Style: Radial gradient using accent colors, positioned at center.
-   - Effect: Apply 120px blur. 
-   - Opacity: 15% in Light Mode, 25% in Dark Mode.
-
-3. **UI Implementation**:
-   - Use the Primary color for main buttons and progress bars.
-   - Apply a 500ms smooth transition for all background and text color changes.
-   - Containers should have 2xl to 3xl rounded corners with subtle backdrop-blur (10px).
-
-4. **Tone**: Modern, high-end "Vibe Coding" aesthetic. Ensure high contrast for readability.
-`;
+                doCopy(text, type) {
                     navigator.clipboard.writeText(text).then(() => {
-                        this.copySuccess = true;
-                        setTimeout(() => this.copySuccess = false, 2500);
+                        if(type === 'full') { this.copyFullSuccess = true; setTimeout(() => this.copyFullSuccess = false, 2000); }
+                        else { this.copyColorSuccess = true; setTimeout(() => this.copyColorSuccess = false, 2000); }
                     });
                 }
             }
