@@ -4,13 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VibePalette | لوحة ألوان الذكاء الاصطناعي</title>
+    <meta name="description" content="VibePalette — أداة ألوان ذكية تولّد برومبتات AI جاهزة لتصميم واجهات احترافية. +45 لوحة لونية مع وضع ليلي/نهاري. Free & Open Source.">
+    <meta property="og:title" content="VibePalette | AI Color Palette for Vibe Coding">
+    <meta property="og:description" content="Design stunning UIs with AI-ready color prompts. 45+ curated palettes with Light/Dark mode, WCAG checker, and multi-format export.">
+    <meta property="og:image" content="https://bmubook.github.io/VibePalette/preview.png">
+    <meta property="og:url" content="https://bmubook.github.io/VibePalette/">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="VibePalette | AI Color Palette for Vibe Coding">
+    <meta name="twitter:description" content="45+ AI-ready color palettes with Light/Dark mode. Free & Open Source.">
+    <meta name="keywords" content="color palette, AI prompts, vibe coding, dark mode, tailwindcss, design system, CSS variables, WCAG, accessibility, RTL, Arabic">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; transition: background-color 0.5s ease; }
+        body { font-family: 'Cairo', 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; transition: background-color 0.5s ease; }
+        [dir="ltr"] body { font-family: 'Inter', 'Cairo', sans-serif; }
         
-        /* تحسين التمرير للقائمة الجانبية */
         .sidebar-scroll {
             overflow-y: auto;
             scrollbar-width: thin;
@@ -19,23 +31,41 @@
         .sidebar-scroll::-webkit-scrollbar { width: 4px; }
         .sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(155, 155, 155, 0.5); border-radius: 10px; }
 
-        /* الهالة المتوهجة الملحمية */
         .glow-bg {
-            position: fixed;
-            top: 50%;
-            left: 50%;
+            position: fixed; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 80vw;
-            height: 80vh;
-            filter: blur(120px);
-            opacity: 0.15;
-            z-index: -1;
-            pointer-events: none;
+            width: 80vw; height: 80vh;
+            filter: blur(120px); opacity: 0.15;
+            z-index: -1; pointer-events: none;
             border-radius: 50%;
             transition: all 0.8s ease-in-out;
         }
         .is-dark .glow-bg { opacity: 0.25; filter: blur(150px); }
         @media (min-width: 1024px) { .hero-title { font-size: 3.5rem !important; } }
+
+        /* Export dropdown */
+        .export-dropdown { display: none; position: absolute; z-index: 100; min-width: 280px; }
+        .export-dropdown.show { display: block; }
+        .export-item { cursor: pointer; transition: all 0.2s; }
+        .export-item:hover { transform: translateX(-4px); }
+
+        /* WCAG badges */
+        .wcag-badge { font-size: 0.65rem; padding: 2px 6px; border-radius: 6px; font-weight: 700; letter-spacing: 0.5px; }
+        .wcag-pass { background: #16a34a22; color: #16a34a; border: 1px solid #16a34a44; }
+        .wcag-fail { background: #dc262622; color: #dc2626; border: 1px solid #dc262644; }
+
+        /* Search input */
+        .search-input::placeholder { opacity: 0.5; }
+
+        /* Fav heart animation */
+        .fav-btn { transition: transform 0.2s; }
+        .fav-btn:hover { transform: scale(1.2); }
+        .fav-btn.active { animation: heartBeat 0.4s ease; }
+        @keyframes heartBeat { 0%{transform:scale(1)} 30%{transform:scale(1.3)} 60%{transform:scale(0.9)} 100%{transform:scale(1)} }
+
+        /* Toast */
+        .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px); opacity: 0; transition: all 0.4s ease; z-index: 9999; pointer-events: none; }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
     </style>
 </head>
 <body class="h-screen flex flex-col overflow-hidden"
@@ -47,14 +77,27 @@
 
     <div class="glow-bg" :style="`background: radial-gradient(circle, ${currentPalette.grad.from}, ${currentPalette.grad.to})`"></div>
 
+    <!-- Toast Notification -->
+    <div class="toast px-6 py-3 rounded-2xl font-bold text-white shadow-2xl text-sm"
+         :class="toastVisible ? 'show' : ''"
+         :style="`background: linear-gradient(to right, ${currentPalette.grad.from}, ${currentPalette.grad.to})`"
+         x-text="toastMsg"></div>
+
+    <!-- Header -->
     <header class="w-full z-50 shadow-sm backdrop-blur-xl border-b flex-shrink-0"
             style="border-color: rgba(128, 128, 128, 0.15); background-color: rgba(128, 128, 128, 0.05);">
-        <div class="max-w-7xl mx-auto px-5 py-4 flex justify-between items-center">
+        <div class="max-w-7xl mx-auto px-5 py-3 flex justify-between items-center">
             <h1 class="text-xl md:text-2xl font-bold flex items-center gap-2">
                 🎨 <span class="tracking-tight">VibePalette</span> 
-                <span class="text-sm opacity-60" x-text="`(${palettes.length})`"></span>
+                <span class="text-sm opacity-60" x-text="`(${filteredPalettes.length})`"></span>
             </h1>
-            <div class="flex items-center gap-2 md:gap-4">
+            <div class="flex items-center gap-2 md:gap-3">
+                <!-- Favorites toggle -->
+                <button @click="showFavOnly = !showFavOnly" class="px-3 py-2 rounded-full text-sm border transition flex items-center gap-1"
+                        :style="`border-color: ${currentBtn}; color: ${showFavOnly ? '#fff' : currentBtn}; background: ${showFavOnly ? currentBtn : 'transparent'}`">
+                    <span x-text="showFavOnly ? '❤️' : '🤍'"></span>
+                    <span class="hidden md:inline text-xs" x-text="favCount"></span>
+                </button>
                 <button @click="toggleLang" class="px-4 py-2 rounded-full font-bold text-sm border transition" :style="`border-color: ${currentBtn}; color: ${currentBtn}`" x-text="lang === 'ar' ? 'EN' : 'عربي'"></button>
                 <button @click="toggleDarkMode" class="w-10 h-10 rounded-full flex items-center justify-center border transition" :style="`border-color: ${currentBtn}; color: ${currentBtn}`" x-text="isDark ? '☀️' : '🌙'"></button>
             </div>
@@ -62,67 +105,181 @@
     </header>
 
     <div class="flex flex-col md:flex-row flex-1 overflow-hidden">
-        <aside class="w-full md:w-[320px] lg:w-[350px] flex-shrink-0 border-b md:border-b-0 md:border-x flex flex-row md:flex-col sidebar-scroll p-3 md:p-5 gap-3 md:gap-4 z-40" 
+        <!-- Sidebar -->
+        <aside class="w-full md:w-[320px] lg:w-[350px] flex-shrink-0 border-b md:border-b-0 md:border-x flex flex-col sidebar-scroll p-3 md:p-4 gap-2 md:gap-3 z-40" 
                style="border-color: rgba(128, 128, 128, 0.15); background-color: rgba(128, 128, 128, 0.02);">
             
-            <template x-for="p in palettes" :key="p.id">
-                <button @click="currentPalette = p"
-                        class="flex-shrink-0 w-32 md:w-full p-3 md:p-4 rounded-2xl border transition-all duration-300 relative overflow-hidden text-start shadow-sm"
-                        :class="currentPalette.id === p.id ? 'shadow-xl scale-[1.02] border-transparent' : 'border-gray-500 border-opacity-20 opacity-60 hover:opacity-100'"
-                        :style="currentPalette.id === p.id ? `background: ${p.grad.from}20; border-color: ${p.grad.from}` : ''">
-                    <div class="text-xs md:text-base font-bold mb-2 truncate" x-text="lang === 'ar' ? p.nameAr : p.nameEn"></div>
-                    <div class="h-2 w-full rounded-full" :style="`background: linear-gradient(to left, ${p.grad.from}, ${p.grad.to})`"></div>
-                </button>
-            </template>
+            <!-- Search -->
+            <div class="flex-shrink-0 relative mb-1">
+                <input type="text" x-model="searchQuery" 
+                       class="search-input w-full px-4 py-2.5 rounded-xl border text-sm backdrop-blur-md outline-none transition"
+                       :style="`border-color: ${currentBtn}40; color: ${currentText}; background: ${currentBtn}08`"
+                       :placeholder="lang === 'ar' ? '🔍 ابحث عن لوحة...' : '🔍 Search palettes...'"
+                       @focus="$el.style.borderColor = currentBtn"
+                       @blur="$el.style.borderColor = currentBtn + '40'">
+            </div>
+
+            <!-- Palette list -->
+            <div class="flex flex-row md:flex-col gap-2 md:gap-3 overflow-x-auto md:overflow-x-visible md:overflow-y-auto flex-1">
+                <template x-for="p in filteredPalettes" :key="p.id">
+                    <div class="flex-shrink-0 relative">
+                        <button @click="currentPalette = p"
+                                class="w-32 md:w-full p-3 md:p-3.5 rounded-2xl border transition-all duration-300 relative overflow-hidden text-start shadow-sm"
+                                :class="currentPalette.id === p.id ? 'shadow-xl scale-[1.02] border-transparent' : 'border-gray-500 border-opacity-20 opacity-60 hover:opacity-100'"
+                                :style="currentPalette.id === p.id ? `background: ${p.grad.from}20; border-color: ${p.grad.from}` : ''">
+                            <div class="flex justify-between items-start">
+                                <div class="text-xs md:text-sm font-bold truncate flex-1" x-text="lang === 'ar' ? p.nameAr : p.nameEn"></div>
+                                <button @click.stop="toggleFav(p.id)" class="fav-btn text-xs ml-1" :class="isFav(p.id) ? 'active' : ''" x-text="isFav(p.id) ? '❤️' : '🤍'"></button>
+                            </div>
+                            <div class="h-1.5 w-full rounded-full mt-2" :style="`background: linear-gradient(to left, ${p.grad.from}, ${p.grad.to})`"></div>
+                            <!-- WCAG mini badge -->
+                            <div class="flex gap-1 mt-1.5">
+                                <span class="wcag-badge" :class="getContrastRatio(p.light.bg, p.light.text) >= 4.5 ? 'wcag-pass' : 'wcag-fail'">AA</span>
+                                <span class="wcag-badge" :class="getContrastRatio(p.dark.bg, p.dark.text) >= 4.5 ? 'wcag-pass' : 'wcag-fail'">AA🌙</span>
+                            </div>
+                        </button>
+                    </div>
+                </template>
+                <div x-show="filteredPalettes.length === 0" class="text-center opacity-50 py-8 text-sm" x-text="lang === 'ar' ? 'لا توجد نتائج' : 'No results'"></div>
+            </div>
         </aside>
 
+        <!-- Main Content -->
         <main class="flex-1 overflow-y-auto p-4 md:p-8 relative">
-            <div class="max-w-5xl mx-auto space-y-10">
-                <section class="text-center py-6">
-                    <h2 class="hero-title text-4xl md:text-6xl font-black leading-tight">
+            <div class="max-w-5xl mx-auto space-y-8">
+                <!-- Hero -->
+                <section class="text-center py-4">
+                    <h2 class="hero-title text-3xl md:text-5xl font-black leading-tight">
                         <span x-text="lang === 'ar' ? 'صمم واجهاتك بـ' : 'Design your UI with'"></span> <br>
                         <span class="text-transparent bg-clip-text" :style="`background-image: linear-gradient(to left, ${currentPalette.grad.from}, ${currentPalette.grad.to})`"
                               x-text="lang === 'ar' ? 'فايب احترافي' : 'Professional Vibe'"></span>
                     </h2>
                 </section>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-10">
-                    <div class="space-y-6">
-                        <div class="p-6 rounded-3xl border shadow-sm backdrop-blur-md" style="border-color: rgba(128,128,128,0.15); background: rgba(128,128,128,0.05)">
+                <!-- Rich Preview -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-10">
+                    <!-- Preview Components -->
+                    <div class="space-y-4">
+                        <!-- Buttons -->
+                        <div class="p-5 rounded-3xl border shadow-sm backdrop-blur-md" style="border-color: rgba(128,128,128,0.15); background: rgba(128,128,128,0.05)">
                             <div class="flex flex-wrap gap-3">
                                 <button class="px-6 py-3 rounded-xl font-bold text-white shadow-lg" :style="`background: linear-gradient(to right, ${currentPalette.grad.from}, ${currentPalette.grad.to})`">Primary</button>
                                 <button class="px-6 py-3 rounded-xl font-bold border-2" :style="`border-color: ${currentBtn}; color: ${currentBtn}`">Outline</button>
+                                <span class="px-3 py-1.5 rounded-full text-xs font-bold self-center" :style="`background: ${currentBtn}22; color: ${currentBtn}`" x-text="lang === 'ar' ? 'شارة' : 'Badge'"></span>
                             </div>
                         </div>
-                        <div class="rounded-3xl border overflow-hidden backdrop-blur-md p-5" style="border-color: rgba(128,128,128,0.15); background: rgba(128,128,128,0.05)">
-                             <div class="w-full bg-gray-500 bg-opacity-10 h-2 rounded-full overflow-hidden"><div class="h-full" :style="`background: ${currentBtn}; width: 65%`"></div></div>
+                        <!-- Input + Progress -->
+                        <div class="p-5 rounded-3xl border backdrop-blur-md space-y-3" style="border-color: rgba(128,128,128,0.15); background: rgba(128,128,128,0.05)">
+                            <input type="text" readonly class="w-full px-4 py-2.5 rounded-xl border text-sm" 
+                                   :style="`border-color: ${currentBtn}44; color: ${currentText}; background: transparent`"
+                                   :value="lang === 'ar' ? 'حقل إدخال تجريبي...' : 'Sample input field...'" />
+                            <div class="w-full bg-gray-500 bg-opacity-10 h-2 rounded-full overflow-hidden"><div class="h-full rounded-full transition-all" :style="`background: linear-gradient(to right, ${currentPalette.grad.from}, ${currentPalette.grad.to}); width: 65%`"></div></div>
+                        </div>
+                        <!-- Mini Navbar -->
+                        <div class="p-3 rounded-2xl border backdrop-blur-md flex items-center justify-between" style="border-color: rgba(128,128,128,0.15); background: rgba(128,128,128,0.05)">
+                            <span class="text-sm font-bold opacity-70" x-text="lang === 'ar' ? '🏠 الرئيسية' : '🏠 Home'"></span>
+                            <span class="text-sm opacity-50" x-text="lang === 'ar' ? '📰 المقالات' : '📰 Blog'"></span>
+                            <span class="text-sm opacity-50" x-text="lang === 'ar' ? '📧 تواصل' : '📧 Contact'"></span>
+                            <span class="px-3 py-1 rounded-lg text-xs font-bold text-white" :style="`background: ${currentBtn}`" x-text="lang === 'ar' ? 'تسجيل' : 'Sign Up'"></span>
                         </div>
                     </div>
-                    <div class="p-8 rounded-[2.5rem] border-2 flex flex-col justify-between backdrop-blur-sm" :style="`border-color: ${currentPalette.grad.from}44; background: ${currentPalette.grad.from}05`">
-                        <div class="h-40 rounded-3xl shadow-2xl mb-4" :style="`background: linear-gradient(135deg, ${currentPalette.grad.from}, ${currentPalette.grad.to})`"></div>
-                        <h4 class="text-xl font-black" x-text="lang === 'ar' ? 'معاينة حية' : 'Live Preview'"></h4>
+                    <!-- Card Preview -->
+                    <div class="p-6 rounded-[2rem] border-2 flex flex-col justify-between backdrop-blur-sm" :style="`border-color: ${currentPalette.grad.from}44; background: ${currentPalette.grad.from}05`">
+                        <div class="h-32 rounded-2xl shadow-2xl mb-3" :style="`background: linear-gradient(135deg, ${currentPalette.grad.from}, ${currentPalette.grad.to})`"></div>
+                        <h4 class="text-lg font-black" x-text="lang === 'ar' ? currentPalette.nameAr : currentPalette.nameEn"></h4>
+                        <p class="text-xs opacity-60 mt-1" x-text="lang === 'ar' ? 'معاينة حية للألوان على عناصر واقعية' : 'Live preview of colors on real UI elements'"></p>
+                        <!-- WCAG Detail -->
+                        <div class="mt-3 p-3 rounded-xl text-xs space-y-1.5" :style="`background: ${currentBtn}08; border: 1px solid ${currentBtn}22`">
+                            <div class="font-bold flex items-center gap-1" x-text="lang === 'ar' ? '♿ تقرير التباين (WCAG)' : '♿ Contrast Report (WCAG)'"></div>
+                            <div class="flex justify-between">
+                                <span x-text="lang === 'ar' ? 'نص على خلفية (نهاري)' : 'Text on BG (Light)'"></span>
+                                <span>
+                                    <span x-text="getContrastRatio(currentPalette.light.bg, currentPalette.light.text).toFixed(1) + ':1'"></span>
+                                    <span class="wcag-badge ml-1" :class="getContrastRatio(currentPalette.light.bg, currentPalette.light.text) >= 4.5 ? 'wcag-pass' : 'wcag-fail'" x-text="getContrastRatio(currentPalette.light.bg, currentPalette.light.text) >= 7 ? 'AAA' : (getContrastRatio(currentPalette.light.bg, currentPalette.light.text) >= 4.5 ? 'AA' : 'Fail')"></span>
+                                </span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span x-text="lang === 'ar' ? 'نص على خلفية (ليلي)' : 'Text on BG (Dark)'"></span>
+                                <span>
+                                    <span x-text="getContrastRatio(currentPalette.dark.bg, currentPalette.dark.text).toFixed(1) + ':1'"></span>
+                                    <span class="wcag-badge ml-1" :class="getContrastRatio(currentPalette.dark.bg, currentPalette.dark.text) >= 4.5 ? 'wcag-pass' : 'wcag-fail'" x-text="getContrastRatio(currentPalette.dark.bg, currentPalette.dark.text) >= 7 ? 'AAA' : (getContrastRatio(currentPalette.dark.bg, currentPalette.dark.text) >= 4.5 ? 'AA' : 'Fail')"></span>
+                                </span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span x-text="lang === 'ar' ? 'زر على خلفية (نهاري)' : 'Button on BG (Light)'"></span>
+                                <span>
+                                    <span x-text="getContrastRatio(currentPalette.light.bg, currentPalette.light.btn).toFixed(1) + ':1'"></span>
+                                    <span class="wcag-badge ml-1" :class="getContrastRatio(currentPalette.light.bg, currentPalette.light.btn) >= 3 ? 'wcag-pass' : 'wcag-fail'" x-text="getContrastRatio(currentPalette.light.bg, currentPalette.light.btn) >= 4.5 ? 'AA' : (getContrastRatio(currentPalette.light.bg, currentPalette.light.btn) >= 3 ? 'AA-L' : 'Fail')"></span>
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <section class="p-8 border-t space-y-8" style="border-color: rgba(128, 128, 128, 0.1);">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                        <button @click="copyFullPrompt" 
-                                class="p-8 rounded-[2rem] border-2 transition-all hover:-translate-y-2 flex flex-col items-center text-center gap-3 shadow-2xl"
-                                :class="copyFullSuccess ? 'bg-green-600 border-transparent text-white' : ''"
-                                :style="!copyFullSuccess ? `border-color: ${currentBtn}; color: ${currentBtn}` : ''">
-                            <span class="font-black text-xl" x-text="copyFullSuccess ? 'Copied Architect Prompt!' : (lang === 'ar' ? 'نسخ البرومبت المتكامل' : 'Copy Smart Prompt')"></span>
-                            <p class="text-xs opacity-70" x-text="lang === 'ar' ? 'دليل هندسي كامل يشرح للذكاء الاصطناعي كيفية بناء الهالة المتوهجة وتناسق العناصر.' : 'Full guide for AI to build the glowing aura and UI harmony.'"></p>
+                <!-- Export Section -->
+                <section class="p-6 border-t space-y-6" style="border-color: rgba(128, 128, 128, 0.1);">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
+                        <!-- AI Prompt -->
+                        <button @click="copyExport('prompt')" 
+                                class="p-6 rounded-[1.5rem] border-2 transition-all hover:-translate-y-1 flex flex-col items-center text-center gap-2 shadow-lg"
+                                :class="activeExport === 'prompt' ? 'text-white' : ''"
+                                :style="activeExport === 'prompt' ? `background: linear-gradient(135deg, ${currentPalette.grad.from}, ${currentPalette.grad.to}); border-color: transparent` : `border-color: ${currentBtn}; color: ${currentBtn}`">
+                            <span class="text-2xl">🤖</span>
+                            <span class="font-black text-sm" x-text="activeExport === 'prompt' ? '✓ Copied!' : (lang === 'ar' ? 'AI Prompt' : 'AI Prompt')"></span>
+                            <p class="text-[0.65rem] opacity-70" x-text="lang === 'ar' ? 'برومبت هندسي كامل للذكاء الاصطناعي' : 'Full architectural AI prompt'"></p>
                         </button>
-
-                        <button @click="copyColorsOnly" 
-                                class="p-8 rounded-[2rem] border-2 transition-all hover:-translate-y-2 flex flex-col items-center text-center gap-3 shadow-2xl"
-                                :class="copyColorSuccess ? 'bg-blue-600 border-transparent text-white' : ''"
-                                :style="!copyColorSuccess ? `border-color: ${currentBtn}; color: ${currentBtn}` : ''">
-                            <span class="font-black text-xl" x-text="copyColorSuccess ? 'Colors Copied!' : (lang === 'ar' ? 'نسخ الألوان فقط' : 'Copy Colors Only')"></span>
-                            <p class="text-xs opacity-70" x-text="lang === 'ar' ? 'نسخ سريع لأكواد الهكس للوضع النهاري والليلي والتدرج فقط.' : 'Quickly copy Hex codes for Light, Dark, and Gradient modes.'"></p>
+                        <!-- CSS Variables -->
+                        <button @click="copyExport('css')"
+                                class="p-6 rounded-[1.5rem] border-2 transition-all hover:-translate-y-1 flex flex-col items-center text-center gap-2 shadow-lg"
+                                :class="activeExport === 'css' ? 'text-white' : ''"
+                                :style="activeExport === 'css' ? `background: linear-gradient(135deg, ${currentPalette.grad.from}, ${currentPalette.grad.to}); border-color: transparent` : `border-color: ${currentBtn}44; color: ${currentBtn}`">
+                            <span class="text-2xl">🎨</span>
+                            <span class="font-black text-sm" x-text="activeExport === 'css' ? '✓ Copied!' : 'CSS Variables'"></span>
+                            <p class="text-[0.65rem] opacity-70">:root { --bg: ... }</p>
+                        </button>
+                        <!-- Tailwind -->
+                        <button @click="copyExport('tailwind')"
+                                class="p-6 rounded-[1.5rem] border-2 transition-all hover:-translate-y-1 flex flex-col items-center text-center gap-2 shadow-lg"
+                                :class="activeExport === 'tailwind' ? 'text-white' : ''"
+                                :style="activeExport === 'tailwind' ? `background: linear-gradient(135deg, ${currentPalette.grad.from}, ${currentPalette.grad.to}); border-color: transparent` : `border-color: ${currentBtn}44; color: ${currentBtn}`">
+                            <span class="text-2xl">💨</span>
+                            <span class="font-black text-sm" x-text="activeExport === 'tailwind' ? '✓ Copied!' : 'Tailwind'"></span>
+                            <p class="text-[0.65rem] opacity-70">tailwind.config.js</p>
+                        </button>
+                        <!-- SCSS -->
+                        <button @click="copyExport('scss')"
+                                class="p-6 rounded-[1.5rem] border-2 transition-all hover:-translate-y-1 flex flex-col items-center text-center gap-2 shadow-lg"
+                                :class="activeExport === 'scss' ? 'text-white' : ''"
+                                :style="activeExport === 'scss' ? `background: linear-gradient(135deg, ${currentPalette.grad.from}, ${currentPalette.grad.to}); border-color: transparent` : `border-color: ${currentBtn}44; color: ${currentBtn}`">
+                            <span class="text-2xl">💎</span>
+                            <span class="font-black text-sm" x-text="activeExport === 'scss' ? '✓ Copied!' : 'SCSS'"></span>
+                            <p class="text-[0.65rem] opacity-70">$variables</p>
+                        </button>
+                        <!-- JSON Tokens -->
+                        <button @click="copyExport('json')"
+                                class="p-6 rounded-[1.5rem] border-2 transition-all hover:-translate-y-1 flex flex-col items-center text-center gap-2 shadow-lg"
+                                :class="activeExport === 'json' ? 'text-white' : ''"
+                                :style="activeExport === 'json' ? `background: linear-gradient(135deg, ${currentPalette.grad.from}, ${currentPalette.grad.to}); border-color: transparent` : `border-color: ${currentBtn}44; color: ${currentBtn}`">
+                            <span class="text-2xl">📦</span>
+                            <span class="font-black text-sm" x-text="activeExport === 'json' ? '✓ Copied!' : 'JSON Tokens'"></span>
+                            <p class="text-[0.65rem] opacity-70">W3C Design Tokens</p>
+                        </button>
+                        <!-- Colors Only -->
+                        <button @click="copyExport('colors')"
+                                class="p-6 rounded-[1.5rem] border-2 transition-all hover:-translate-y-1 flex flex-col items-center text-center gap-2 shadow-lg"
+                                :class="activeExport === 'colors' ? 'text-white' : ''"
+                                :style="activeExport === 'colors' ? `background: linear-gradient(135deg, ${currentPalette.grad.from}, ${currentPalette.grad.to}); border-color: transparent` : `border-color: ${currentBtn}44; color: ${currentBtn}`">
+                            <span class="text-2xl">🎯</span>
+                            <span class="font-black text-sm" x-text="activeExport === 'colors' ? '✓ Copied!' : (lang === 'ar' ? 'الألوان فقط' : 'Colors Only')"></span>
+                            <p class="text-[0.65rem] opacity-70">HEX codes</p>
                         </button>
                     </div>
                 </section>
+
+                <!-- Footer -->
+                <footer class="text-center py-4 opacity-40 text-xs">
+                    <p>Made with ❤️ for the Vibe Coding Community — <a href="https://github.com/bmubook/VibePalette" target="_blank" class="underline">GitHub</a></p>
+                </footer>
             </div>
         </main>
     </div>
@@ -130,7 +287,11 @@
     <script>
         function themePreview() {
             return {
-                isDark: true, lang: 'ar', currentPalette: null, copyFullSuccess: false, copyColorSuccess: false,
+                isDark: true, lang: 'ar', currentPalette: null,
+                activeExport: null, 
+                toastVisible: false, toastMsg: '',
+                searchQuery: '', showFavOnly: false,
+                favorites: JSON.parse(localStorage.getItem('vp_favs') || '[]'),
                 palettes: [
                     { id: 1, nameAr: 'شروق الشمس', nameEn: 'Warm Sunrise', light: { bg: '#FFF7ED', text: '#431407', btn: '#EA580C' }, dark: { bg: '#0D0804', text: '#FFEDD5', btn: '#F97316' }, grad: { from: '#EA580C', to: '#FBA918' } },
                     { id: 2, nameAr: 'غابة الزمرد', nameEn: 'Emerald Forest', light: { bg: '#F0FDF4', text: '#064E3B', btn: '#10B981' }, dark: { bg: '#020D0A', text: '#D1FAE5', btn: '#34D399' }, grad: { from: '#059669', to: '#34D399' } },
@@ -144,69 +305,118 @@
                     { id: 10, nameAr: 'أزرق ياقوتي', nameEn: 'Sapphire Blue', light: { bg: '#F1F5F9', text: '#334155', btn: '#2563EB' }, dark: { bg: '#050810', text: '#CBD5E1', btn: '#3B82F6' }, grad: { from: '#1D4ED8', to: '#60A5FA' } },
                     { id: 11, nameAr: 'حصاد الخريف', nameEn: 'Autumn Harvest', light: { bg: '#FEFCE8', text: '#713F12', btn: '#CA8A04' }, dark: { bg: '#1A0F02', text: '#FEF08A', btn: '#EAB308' }, grad: { from: '#A16207', to: '#FDE047' } },
                     { id: 12, nameAr: 'لافندر هادئ', nameEn: 'Calm Lavender', light: { bg: '#FAF5FF', text: '#581C87', btn: '#9333EA' }, dark: { bg: '#0F021A', text: '#E9D5FF', btn: '#A855F7' }, grad: { from: '#7E22CE', to: '#C084FC' } },
-                    { id: 13, nameAr: 'حمضيات', nameEn: 'Tropical Citrus', light: { bg: '#F0FDFA', text: '#115E59', btn: '#EAB308' }, dark: { bg: '#021A1A', text: '#CCFBF1', btn: '#FDE047' }, grad: { from: '#0F766E', to: '#FACC15' } },
+                    { id: 13, nameAr: 'حمضيات استوائية', nameEn: 'Tropical Citrus', light: { bg: '#F0FDFA', text: '#115E59', btn: '#EAB308' }, dark: { bg: '#021A1A', text: '#CCFBF1', btn: '#FDE047' }, grad: { from: '#0F766E', to: '#FACC15' } },
                     { id: 14, nameAr: 'قهوة وكريمة', nameEn: 'Coffee & Cream', light: { bg: '#FDF8F6', text: '#4A3022', btn: '#8B5E3C' }, dark: { bg: '#1A120D', text: '#EADACF', btn: '#B68D6A' }, grad: { from: '#63402C', to: '#D4B89F' } },
                     { id: 15, nameAr: 'لؤلؤ أحادي', nameEn: 'Monochrome Pearl', light: { bg: '#FFFFFF', text: '#171717', btn: '#404040' }, dark: { bg: '#0A0A0A', text: '#F5F5F5', btn: '#A3A3A3' }, grad: { from: '#262626', to: '#D4D4D4' } },
                     { id: 16, nameAr: 'شاي الماتشا', nameEn: 'Matcha Tea', light: { bg: '#F4FBEB', text: '#2F4F2F', btn: '#86A760' }, dark: { bg: '#0D1A0D', text: '#E8F0E8', btn: '#A3C67A' }, grad: { from: '#86A760', to: '#C5E1A5' } },
                     { id: 17, nameAr: 'نيون منتصف الليل', nameEn: 'Midnight Neon', light: { bg: '#F3E8FF', text: '#3B0764', btn: '#D946EF' }, dark: { bg: '#0A0010', text: '#FDF4FF', btn: '#E879F9' }, grad: { from: '#C026D3', to: '#E879F9' } },
                     { id: 18, nameAr: 'جليد القطب', nameEn: 'Polar Ice', light: { bg: '#F0F9FF', text: '#0C4A6E', btn: '#38BDF8' }, dark: { bg: '#021A2B', text: '#E0F2FE', btn: '#7DD3FC' }, grad: { from: '#0284C7', to: '#7DD3FC' } },
-                    { id: 19, nameAr: 'حمم بركانية', nameEn: 'Volcanic Lava', light: { bg: '#FFF1F2', text: '#881337', btn: '#E11D48' }, dark: { bg: '#1A0202', text: '#FFE4E6', btn: '#F43F5E' }, grad: { from: '#BE123C', to: '#FB7185' } },
-                    { id: 20, nameAr: 'خوخ مخملي', nameEn: 'Velvet Peach', light: { bg: '#FFF6F5', text: '#5C2723', btn: '#F87171' }, dark: { bg: '#1A0B0A', text: '#FEE2E2', btn: '#FCA5A5' }, grad: { from: '#EF4444', to: '#FCA5A5' } },
-                    { id: 21, nameAr: 'موجة كلاسيكية', nameEn: 'Classic Wave', light: { bg: '#F5F3FF', text: '#2E1065', btn: '#8B5CF6' }, dark: { bg: '#0D051A', text: '#EDE9FE', btn: '#A78BFA' }, grad: { from: '#7C3AED', to: '#C4B5FD' } },
-                    { id: 22, nameAr: 'طحالب وخشب', nameEn: 'Moss & Wood', light: { bg: '#FAFAF9', text: '#44403C', btn: '#65A30D' }, dark: { bg: '#100E0D', text: '#F5F5F4', btn: '#84CC16' }, grad: { from: '#4D7C0F', to: '#A3E635' } },
-                    { id: 23, nameAr: 'غزل البنات', nameEn: 'Cotton Candy', light: { bg: '#FDF2F8', text: '#831843', btn: '#F472B6' }, dark: { bg: '#1A050D', text: '#FCE7F3', btn: '#F9A8D4' }, grad: { from: '#EC4899', to: '#FBCFE8' } },
-                    { id: 24, nameAr: 'الساعة الذهبية', nameEn: 'Golden Hour', light: { bg: '#FFFBEB', text: '#78350F', btn: '#D97706' }, dark: { bg: '#1A0C02', text: '#FEF3C7', btn: '#F59E0B' }, grad: { from: '#B45309', to: '#FCD34D' } },
-                    { id: 25, nameAr: 'فضاء سحيق', nameEn: 'Deep Space', light: { bg: '#F8FAFC', text: '#0F172A', btn: '#475569' }, dark: { bg: '#01040D', text: '#F8FAFC', btn: '#94A3B8' }, grad: { from: '#334155', to: '#CBD5E1' } },
-                    { id: 26, nameAr: 'نعناع وشوكولاتة', nameEn: 'Mint & Choco', light: { bg: '#ECFDF5', text: '#064E3B', btn: '#10B981' }, dark: { bg: '#021A14', text: '#D1FAE5', btn: '#34D399' }, grad: { from: '#059669', to: '#6EE7B7' } },
-                    { id: 27, nameAr: 'زهرة الأوركيد', nameEn: 'Orchid Flower', light: { bg: '#FAF5FF', text: '#581C87', btn: '#D946EF' }, dark: { bg: '#1A021A', text: '#F3E8FF', btn: '#E879F9' }, grad: { from: '#A21CAF', to: '#F0ABFC' } },
-                    { id: 28, nameAr: 'صدأ وتيل', nameEn: 'Rust & Teal', light: { bg: '#F0FDFA', text: '#134E4A', btn: '#0D9488' }, dark: { bg: '#021A1A', text: '#CCFBF1', btn: '#14B8A6' }, grad: { from: '#0F766E', to: '#5EEAD4' } },
-                    { id: 29, nameAr: 'صخر وورد', nameEn: 'Rock & Rose', light: { bg: '#F1F5F9', text: '#334155', btn: '#F43F5E' }, dark: { bg: '#05081A', text: '#E2E8F0', btn: '#FB7185' }, grad: { from: '#E11D48', to: '#FDA4AF' } },
-                    { id: 30, nameAr: 'ليموناضة', nameEn: 'Lemonade', light: { bg: '#FEFCE8', text: '#713F12', btn: '#EAB308' }, dark: { bg: '#1A1A02', text: '#FEF08A', btn: '#FACC15' }, grad: { from: '#CA8A04', to: '#FDE047' } },
-                    { id: 31, nameAr: 'شفق قطبي', nameEn: 'Aurora', light: { bg: '#F0FDF4', text: '#064E3B', btn: '#22C55E' }, dark: { bg: '#021A10', text: '#DCFCE7', btn: '#4ADE80' }, grad: { from: '#16A34A', to: '#86EFAC' } },
-                    { id: 32, nameAr: 'فخار وتيراكوتا', nameEn: 'Clay & Terracotta', light: { bg: '#FFF7ED', text: '#7C2D12', btn: '#EA580C' }, dark: { bg: '#1A0A04', text: '#FFEDD5', btn: '#F97316' }, grad: { from: '#C2410C', to: '#FDBA74' } },
-                    { id: 33, nameAr: 'إنديجو كهربائي', nameEn: 'Electric Indigo', light: { bg: '#EEF2FF', text: '#312E81', btn: '#4F46E5' }, dark: { bg: '#0D0D1A', text: '#E0E7FF', btn: '#6366F1' }, grad: { from: '#4338CA', to: '#A5B4FC' } },
-                    { id: 34, nameAr: 'ساكورا (كرز)', nameEn: 'Sakura Blossom', light: { bg: '#FEF2F2', text: '#7F1D1D', btn: '#F43F5E' }, dark: { bg: '#1A0404', text: '#FEE2E2', btn: '#FB7185' }, grad: { from: '#E11D48', to: '#FDA4AF' } },
-                    { id: 35, nameAr: 'جينز عتيق', nameEn: 'Vintage Denim', light: { bg: '#F8FAFC', text: '#1E293B', btn: '#3B82F6' }, dark: { bg: '#050D1A', text: '#F1F5F9', btn: '#60A5FA' }, grad: { from: '#2563EB', to: '#93C5FD' } },
-                    { id: 36, nameAr: 'نعناع نيون', nameEn: 'Neon Mint', light: { bg: '#FAFAFA', text: '#171717', btn: '#14B8A6' }, dark: { bg: '#0A0A0A', text: '#FAFAFA', btn: '#2DD4BF' }, grad: { from: '#0D9488', to: '#5EEAD4' } },
-                    { id: 37, nameAr: 'شعاب مرجانية', nameEn: 'Coral Reef', light: { bg: '#FFF1F2', text: '#881337', btn: '#F43F5E' }, dark: { bg: '#1A0208', text: '#FFE4E6', btn: '#FB7185' }, grad: { from: '#E11D48', to: '#FDA4AF' } },
-                    { id: 38, nameAr: 'شفق المساء', nameEn: 'Evening Twilight', light: { bg: '#F8FAFC', text: '#0F172A', btn: '#8B5CF6' }, dark: { bg: '#050510', text: '#F8FAFC', btn: '#A78BFA' }, grad: { from: '#7C3AED', to: '#C4B5FD' } },
-                    { id: 39, nameAr: 'فستق حلبي', nameEn: 'Pistachio', light: { bg: '#F0FDF4', text: '#14532D', btn: '#22C55E' }, dark: { bg: '#021A0A', text: '#DCFCE7', btn: '#4ADE80' }, grad: { from: '#16A34A', to: '#86EFAC' } },
-                    { id: 40, nameAr: 'أسود وذهب', nameEn: 'Black & Gold', light: { bg: '#FAFAFA', text: '#000000', btn: '#D97706' }, dark: { bg: '#000000', text: '#FFFFFF', btn: '#F59E0B' }, grad: { from: '#B45309', to: '#FCD34D' } },
-                    { id: 41, nameAr: 'أميثيست', nameEn: 'Amethyst', light: { bg: '#FAF5FF', text: '#4C1D95', btn: '#7C3AED' }, dark: { bg: '#1A052E', text: '#F3E8FF', btn: '#8B5CF6' }, grad: { from: '#6D28D9', to: '#A78BFA' } },
-                    { id: 42, nameAr: 'بطيخ منعش', nameEn: 'Fresh Watermelon', light: { bg: '#FFF1F2', text: '#831843', btn: '#F43F5E' }, dark: { bg: '#1A020D', text: '#FFE4E6', btn: '#FB7185' }, grad: { from: '#E11D48', to: '#FDA4AF' } },
-                    { id: 43, nameAr: 'خلية نحل', nameEn: 'Honeycomb', light: { bg: '#FFFBEB', text: '#78350F', btn: '#D97706' }, dark: { bg: '#1A0C02', text: '#FEF3C7', btn: '#F59E0B' }, grad: { from: '#B45309', to: '#FCD34D' } },
-                    { id: 44, nameAr: 'بحر هائج', nameEn: 'Stormy Sea', light: { bg: '#F1F5F9', text: '#0F172A', btn: '#334155' }, dark: { bg: '#01050A', text: '#F1F5F9', btn: '#475569' }, grad: { from: '#1E293B', to: '#64748B' } },
-                    { id: 45, nameAr: 'مارشميلو', nameEn: 'Marshmallow', light: { bg: '#FAFAFA', text: '#3F3F46', btn: '#A1A1AA' }, dark: { bg: '#0D0D0E', text: '#FAFAFA', btn: '#D4D4D8' }, grad: { from: '#71717A', to: '#E4E4E7' } }
+                    { id: 19, nameAr: 'خوخ مخملي', nameEn: 'Velvet Peach', light: { bg: '#FFF6F5', text: '#5C2723', btn: '#F87171' }, dark: { bg: '#1A0B0A', text: '#FEE2E2', btn: '#FCA5A5' }, grad: { from: '#EF4444', to: '#FCA5A5' } },
+                    { id: 20, nameAr: 'موجة كلاسيكية', nameEn: 'Classic Wave', light: { bg: '#F5F3FF', text: '#2E1065', btn: '#8B5CF6' }, dark: { bg: '#0D051A', text: '#EDE9FE', btn: '#A78BFA' }, grad: { from: '#7C3AED', to: '#C4B5FD' } },
+                    { id: 21, nameAr: 'طحالب وخشب', nameEn: 'Moss & Wood', light: { bg: '#FAFAF9', text: '#44403C', btn: '#65A30D' }, dark: { bg: '#100E0D', text: '#F5F5F4', btn: '#84CC16' }, grad: { from: '#4D7C0F', to: '#A3E635' } },
+                    { id: 22, nameAr: 'غزل البنات', nameEn: 'Cotton Candy', light: { bg: '#FDF2F8', text: '#831843', btn: '#F472B6' }, dark: { bg: '#1A050D', text: '#FCE7F3', btn: '#F9A8D4' }, grad: { from: '#EC4899', to: '#FBCFE8' } },
+                    { id: 23, nameAr: 'الساعة الذهبية', nameEn: 'Golden Hour', light: { bg: '#FFFBEB', text: '#78350F', btn: '#D97706' }, dark: { bg: '#1A0C02', text: '#FEF3C7', btn: '#F59E0B' }, grad: { from: '#B45309', to: '#FCD34D' } },
+                    { id: 24, nameAr: 'فضاء سحيق', nameEn: 'Deep Space', light: { bg: '#F8FAFC', text: '#0F172A', btn: '#475569' }, dark: { bg: '#01040D', text: '#F8FAFC', btn: '#94A3B8' }, grad: { from: '#334155', to: '#CBD5E1' } },
+                    { id: 25, nameAr: 'نعناع وشوكولاتة', nameEn: 'Mint & Choco', light: { bg: '#ECFDF5', text: '#064E3B', btn: '#10B981' }, dark: { bg: '#021A14', text: '#D1FAE5', btn: '#34D399' }, grad: { from: '#059669', to: '#6EE7B7' } },
+                    { id: 26, nameAr: 'زهرة الأوركيد', nameEn: 'Orchid Flower', light: { bg: '#FAF5FF', text: '#581C87', btn: '#D946EF' }, dark: { bg: '#1A021A', text: '#F3E8FF', btn: '#E879F9' }, grad: { from: '#A21CAF', to: '#F0ABFC' } },
+                    { id: 27, nameAr: 'صدأ وتيل', nameEn: 'Rust & Teal', light: { bg: '#F0FDFA', text: '#134E4A', btn: '#0D9488' }, dark: { bg: '#021A1A', text: '#CCFBF1', btn: '#14B8A6' }, grad: { from: '#0F766E', to: '#5EEAD4' } },
+                    { id: 28, nameAr: 'صخر وورد', nameEn: 'Rock & Rose', light: { bg: '#F1F5F9', text: '#334155', btn: '#F43F5E' }, dark: { bg: '#05081A', text: '#E2E8F0', btn: '#FB7185' }, grad: { from: '#E11D48', to: '#FDA4AF' } },
+                    { id: 29, nameAr: 'ليموناضة', nameEn: 'Lemonade', light: { bg: '#FEFCE8', text: '#713F12', btn: '#EAB308' }, dark: { bg: '#1A1A02', text: '#FEF08A', btn: '#FACC15' }, grad: { from: '#CA8A04', to: '#FDE047' } },
+                    { id: 30, nameAr: 'شفق قطبي', nameEn: 'Aurora', light: { bg: '#F0FDF4', text: '#064E3B', btn: '#22C55E' }, dark: { bg: '#021A10', text: '#DCFCE7', btn: '#4ADE80' }, grad: { from: '#16A34A', to: '#86EFAC' } },
+                    { id: 31, nameAr: 'فخار وتيراكوتا', nameEn: 'Clay & Terracotta', light: { bg: '#FFF7ED', text: '#7C2D12', btn: '#EA580C' }, dark: { bg: '#1A0A04', text: '#FFEDD5', btn: '#F97316' }, grad: { from: '#C2410C', to: '#FDBA74' } },
+                    { id: 32, nameAr: 'إنديجو كهربائي', nameEn: 'Electric Indigo', light: { bg: '#EEF2FF', text: '#312E81', btn: '#4F46E5' }, dark: { bg: '#0D0D1A', text: '#E0E7FF', btn: '#6366F1' }, grad: { from: '#4338CA', to: '#A5B4FC' } },
+                    { id: 33, nameAr: 'ساكورا', nameEn: 'Sakura Blossom', light: { bg: '#FFF5F7', text: '#6B1D3A', btn: '#E8729A' }, dark: { bg: '#1A0610', text: '#FFE4EC', btn: '#F9A8C8' }, grad: { from: '#D64276', to: '#F9C4D8' } },
+                    { id: 34, nameAr: 'جينز عتيق', nameEn: 'Vintage Denim', light: { bg: '#F8FAFC', text: '#1E293B', btn: '#3B82F6' }, dark: { bg: '#050D1A', text: '#F1F5F9', btn: '#60A5FA' }, grad: { from: '#2563EB', to: '#93C5FD' } },
+                    { id: 35, nameAr: 'نعناع نيون', nameEn: 'Neon Mint', light: { bg: '#FAFAFA', text: '#171717', btn: '#14B8A6' }, dark: { bg: '#0A0A0A', text: '#FAFAFA', btn: '#2DD4BF' }, grad: { from: '#0D9488', to: '#5EEAD4' } },
+                    { id: 36, nameAr: 'أسود وذهب', nameEn: 'Black & Gold', light: { bg: '#FAFAFA', text: '#000000', btn: '#D97706' }, dark: { bg: '#000000', text: '#FFFFFF', btn: '#F59E0B' }, grad: { from: '#B45309', to: '#FCD34D' } },
+                    { id: 37, nameAr: 'أميثيست', nameEn: 'Amethyst', light: { bg: '#FAF5FF', text: '#4C1D95', btn: '#7C3AED' }, dark: { bg: '#1A052E', text: '#F3E8FF', btn: '#8B5CF6' }, grad: { from: '#6D28D9', to: '#A78BFA' } },
+                    { id: 38, nameAr: 'بطيخ منعش', nameEn: 'Fresh Watermelon', light: { bg: '#F0FFF4', text: '#1A4731', btn: '#38A169' }, dark: { bg: '#0A1A12', text: '#C6F6D5', btn: '#68D391' }, grad: { from: '#276749', to: '#9AE6B4' } },
+                    { id: 39, nameAr: 'خلية نحل', nameEn: 'Honeycomb', light: { bg: '#FFFBEB', text: '#78350F', btn: '#D97706' }, dark: { bg: '#1A0C02', text: '#FEF3C7', btn: '#F59E0B' }, grad: { from: '#92400E', to: '#FDE68A' } },
+                    { id: 40, nameAr: 'بحر هائج', nameEn: 'Stormy Sea', light: { bg: '#F1F5F9', text: '#0F172A', btn: '#334155' }, dark: { bg: '#01050A', text: '#F1F5F9', btn: '#475569' }, grad: { from: '#1E293B', to: '#64748B' } },
+                    { id: 41, nameAr: 'مارشميلو', nameEn: 'Marshmallow', light: { bg: '#FAFAFA', text: '#3F3F46', btn: '#A1A1AA' }, dark: { bg: '#0D0D0E', text: '#FAFAFA', btn: '#D4D4D8' }, grad: { from: '#71717A', to: '#E4E4E7' } },
+                    { id: 42, nameAr: 'فستق حلبي', nameEn: 'Pistachio', light: { bg: '#F0FDF4', text: '#14532D', btn: '#22C55E' }, dark: { bg: '#021A0A', text: '#DCFCE7', btn: '#4ADE80' }, grad: { from: '#15803D', to: '#86EFAC' } },
+                    { id: 43, nameAr: 'شعاب مرجانية', nameEn: 'Coral Reef', light: { bg: '#FFF5F0', text: '#7C2D12', btn: '#F97316' }, dark: { bg: '#1A0804', text: '#FFEDD5', btn: '#FB923C' }, grad: { from: '#EA580C', to: '#FDBA74' } }
                 ],
-                init() { this.currentPalette = this.palettes[0]; },
+                init() { this.currentPalette = this.palettes[7]; /* Dusk Sky default */ },
                 toggleDarkMode() { this.isDark = !this.isDark; },
                 toggleLang() { this.lang = this.lang === 'ar' ? 'en' : 'ar'; },
                 get currentBg() { return this.isDark ? this.currentPalette.dark.bg : this.currentPalette.light.bg; },
                 get currentText() { return this.isDark ? this.currentPalette.dark.text : this.currentPalette.light.text; },
                 get currentBtn() { return this.isDark ? this.currentPalette.dark.btn : this.currentPalette.light.btn; },
-                
-                // نسخ البرومبت المعماري المتكامل
-                copyFullPrompt() {
-                    const p = this.currentPalette;
-                    const text = `Act as a professional UI/UX Developer. Please apply the following visual identity with attention to the "Glow Aesthetic":
-1. Colors: Light [BG:${p.light.bg}, Text:${p.light.text}, Btn:${p.light.btn}] | Dark [BG:${p.dark.bg}, Text:${p.dark.text}, Btn:${p.dark.btn}]
-2. Glow Aura: Fixed background radial-gradient using [${p.grad.from}] to [${p.grad.to}] (Blur: 120px, Opacity: 20%).
-3. Details: 2xl rounded corners, backdrop-blur(10px), and smooth 500ms transitions.`;
-                    this.doCopy(text, 'full');
+
+                // Filtered palettes
+                get filteredPalettes() {
+                    let list = this.palettes;
+                    if (this.showFavOnly) list = list.filter(p => this.favorites.includes(p.id));
+                    if (this.searchQuery.trim()) {
+                        const q = this.searchQuery.trim().toLowerCase();
+                        list = list.filter(p => p.nameAr.includes(q) || p.nameEn.toLowerCase().includes(q));
+                    }
+                    return list;
                 },
 
-                // نسخ الألوان فقط
-                copyColorsOnly() {
-                    const p = this.currentPalette;
-                    const text = `Light: ${p.light.bg}, ${p.light.text}, ${p.light.btn} | Dark: ${p.dark.bg}, ${p.dark.text}, ${p.dark.btn} | Grad: ${p.grad.from}-${p.grad.to}`;
-                    this.doCopy(text, 'color');
+                // Favorites
+                get favCount() { return this.favorites.length; },
+                isFav(id) { return this.favorites.includes(id); },
+                toggleFav(id) {
+                    if (this.favorites.includes(id)) this.favorites = this.favorites.filter(f => f !== id);
+                    else this.favorites.push(id);
+                    localStorage.setItem('vp_favs', JSON.stringify(this.favorites));
                 },
 
-                doCopy(text, type) {
+                // WCAG Contrast
+                hexToRgb(hex) {
+                    const r = parseInt(hex.slice(1,3),16)/255;
+                    const g = parseInt(hex.slice(3,5),16)/255;
+                    const b = parseInt(hex.slice(5,7),16)/255;
+                    return [r,g,b];
+                },
+                luminance(hex) {
+                    const [r,g,b] = this.hexToRgb(hex).map(c => c <= 0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4));
+                    return 0.2126*r + 0.7152*g + 0.0722*b;
+                },
+                getContrastRatio(bg, fg) {
+                    const l1 = Math.max(this.luminance(bg), this.luminance(fg));
+                    const l2 = Math.min(this.luminance(bg), this.luminance(fg));
+                    return (l1 + 0.05) / (l2 + 0.05);
+                },
+
+                // Export
+                copyExport(type) {
+                    const p = this.currentPalette;
+                    let text = '';
+                    const name = p.nameEn.replace(/[^a-zA-Z]/g, '-').toLowerCase();
+                    switch(type) {
+                        case 'prompt':
+                            text = `Act as a professional UI/UX Developer. Apply this visual identity with "Glow Aesthetic":\n1. Colors: Light [BG:${p.light.bg}, Text:${p.light.text}, Btn:${p.light.btn}] | Dark [BG:${p.dark.bg}, Text:${p.dark.text}, Btn:${p.dark.btn}]\n2. Glow Aura: Fixed radial-gradient [${p.grad.from}] → [${p.grad.to}] (Blur:120px, Opacity:20%).\n3. UI: 2xl rounded, backdrop-blur(10px), smooth 500ms transitions.\n4. Support both Light & Dark mode with elegant switching.`;
+                            break;
+                        case 'css':
+                            text = `/* ${p.nameEn} — VibePalette */\n:root {\n  /* Light Mode */\n  --bg: ${p.light.bg};\n  --text: ${p.light.text};\n  --btn: ${p.light.btn};\n  --grad-from: ${p.grad.from};\n  --grad-to: ${p.grad.to};\n}\n\n[data-theme="dark"] {\n  --bg: ${p.dark.bg};\n  --text: ${p.dark.text};\n  --btn: ${p.dark.btn};\n}`;
+                            break;
+                        case 'tailwind':
+                            text = `// ${p.nameEn} — VibePalette\nmodule.exports = {\n  theme: {\n    extend: {\n      colors: {\n        light: { bg: '${p.light.bg}', text: '${p.light.text}', btn: '${p.light.btn}' },\n        dark: { bg: '${p.dark.bg}', text: '${p.dark.text}', btn: '${p.dark.btn}' },\n        grad: { from: '${p.grad.from}', to: '${p.grad.to}' }\n      }\n    }\n  }\n}`;
+                            break;
+                        case 'scss':
+                            text = `// ${p.nameEn} — VibePalette\n$light-bg: ${p.light.bg};\n$light-text: ${p.light.text};\n$light-btn: ${p.light.btn};\n$dark-bg: ${p.dark.bg};\n$dark-text: ${p.dark.text};\n$dark-btn: ${p.dark.btn};\n$grad-from: ${p.grad.from};\n$grad-to: ${p.grad.to};`;
+                            break;
+                        case 'json':
+                            text = JSON.stringify({ name: p.nameEn, light: p.light, dark: p.dark, gradient: p.grad }, null, 2);
+                            break;
+                        case 'colors':
+                            text = `Light: ${p.light.bg}, ${p.light.text}, ${p.light.btn} | Dark: ${p.dark.bg}, ${p.dark.text}, ${p.dark.btn} | Grad: ${p.grad.from} → ${p.grad.to}`;
+                            break;
+                    }
                     navigator.clipboard.writeText(text).then(() => {
-                        if(type === 'full') { this.copyFullSuccess = true; setTimeout(() => this.copyFullSuccess = false, 2500); }
-                        else { this.copyColorSuccess = true; setTimeout(() => this.copyColorSuccess = false, 2500); }
+                        this.activeExport = type;
+                        this.showToast(this.lang === 'ar' ? '✓ تم النسخ بنجاح!' : '✓ Copied to clipboard!');
+                        setTimeout(() => this.activeExport = null, 2500);
                     });
+                },
+
+                showToast(msg) {
+                    this.toastMsg = msg;
+                    this.toastVisible = true;
+                    setTimeout(() => this.toastVisible = false, 2000);
                 }
             }
         }
