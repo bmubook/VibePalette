@@ -8,125 +8,126 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; transition: background-color 0.5s ease; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.5); border-radius: 10px; }
-        /* تحسينات النصوص للشاشات الكبيرة */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.3); border-radius: 10px; }
+        
+        /* تأثير التوهج الملحمي */
+        .glow-bg {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80vw;
+            height: 80vh;
+            filter: blur(120px);
+            opacity: 0.15;
+            z-index: -1;
+            pointer-events: none;
+            border-radius: 50%;
+            transition: all 0.8s ease-in-out;
+        }
+        .is-dark .glow-bg { opacity: 0.25; filter: blur(150px); }
+
         @media (min-width: 1024px) {
-            .hero-title { font-size: 3.5rem !important; }
+            .hero-title { font-size: 4rem !important; }
         }
     </style>
 </head>
-<body class="transition-colors duration-500 min-h-screen flex flex-col overflow-hidden"
+<body class="min-h-screen flex flex-col overflow-hidden"
+      :class="isDark ? 'is-dark' : ''"
       x-data="themePreview()"
       :dir="lang === 'ar' ? 'rtl' : 'ltr'"
       :style="`background-color: ${currentBg}; color: ${currentText}`"
       x-effect="document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr'; document.documentElement.lang = lang;">
 
+    <div class="glow-bg" :style="`background: radial-gradient(circle, ${currentPalette.grad.from}, ${currentPalette.grad.to})`"></div>
+
     <header class="w-full z-50 shadow-sm backdrop-blur-xl border-b flex-shrink-0"
             style="border-color: rgba(128, 128, 128, 0.15); background-color: rgba(128, 128, 128, 0.05);">
         <div class="max-w-7xl mx-auto px-5 py-4 flex justify-between items-center">
             <h1 class="text-xl md:text-2xl font-bold flex items-center gap-2">
-                🎨 <span class="tracking-tight" x-text="lang === 'ar' ? 'VibePalette' : 'VibePalette'"></span> 
+                🎨 <span class="tracking-tight">VibePalette</span> 
                 <span class="text-sm opacity-60" x-text="`(${palettes.length})`"></span>
             </h1>
             
             <div class="flex items-center gap-2 md:gap-4">
-                <button @click="toggleLang" 
-                        class="px-4 py-2 rounded-full font-bold text-sm transition shadow-sm border hover:-translate-y-0.5"
-                        :style="`border-color: ${currentBtn}; color: ${currentBtn}`">
-                    <span x-text="lang === 'ar' ? 'EN' : 'عربي'"></span>
-                </button>
-                <button @click="toggleDarkMode" 
-                        class="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center transition shadow-sm border text-lg hover:-translate-y-0.5"
-                        :style="`border-color: ${currentBtn}; color: ${currentBtn}`">
-                    <span x-text="isDark ? '☀️' : '🌙'"></span>
-                </button>
+                <button @click="toggleLang" class="px-4 py-2 rounded-full font-bold text-sm border transition shadow-sm hover:scale-105" :style="`border-color: ${currentBtn}; color: ${currentBtn}`" x-text="lang === 'ar' ? 'EN' : 'عربي'"></button>
+                <button @click="toggleDarkMode" class="w-10 h-10 rounded-full flex items-center justify-center border transition shadow-sm hover:rotate-12" :style="`border-color: ${currentBtn}; color: ${currentBtn}`" x-text="isDark ? '☀️' : '🌙'"></button>
             </div>
         </div>
     </header>
 
     <div class="flex flex-col md:flex-row flex-1 overflow-hidden">
         <aside class="w-full md:w-[320px] lg:w-[350px] flex-shrink-0 border-b md:border-b-0 md:border-x flex overflow-x-auto md:overflow-y-auto md:flex-col hide-scrollbar p-3 md:p-5 gap-3 md:gap-4 z-40 relative backdrop-blur-md"
-               style="border-color: rgba(128, 128, 128, 0.15); background-color: rgba(128, 128, 128, 0.02);"
-               :class="lang === 'ar' ? 'rtl:snap-reverse snap-x md:snap-none' : 'snap-x md:snap-none'">
+               style="border-color: rgba(128, 128, 128, 0.1);">
             
             <template x-for="p in palettes" :key="p.id">
                 <button @click="currentPalette = p"
-                        class="flex-shrink-0 w-32 md:w-full p-3 md:p-4 rounded-2xl md:rounded-xl border transition-all duration-300 snap-center md:snap-align-none relative overflow-hidden group text-start"
-                        :class="currentPalette.id === p.id ? 'shadow-md md:shadow-lg md:-translate-y-1 scale-105 md:scale-100 border-transparent' : 'border-gray-300 opacity-80 hover:opacity-100 hover:border-gray-400'"
-                        :style="currentPalette.id === p.id ? `background-image: linear-gradient(135deg, ${p.grad.from}15, ${p.grad.to}15); border-color: ${p.grad.from}` : ''">
-                    <div class="text-xs md:text-base font-bold mb-2 md:mb-3 truncate" x-text="lang === 'ar' ? p.nameAr : p.nameEn"></div>
-                    <div class="h-2 md:h-3 w-full rounded-full shadow-inner" :style="`background: linear-gradient(to left, ${p.grad.from}, ${p.grad.to})`"></div>
+                        class="flex-shrink-0 w-32 md:w-full p-3 md:p-4 rounded-2xl border transition-all duration-300 relative overflow-hidden text-start"
+                        :class="currentPalette.id === p.id ? 'shadow-xl scale-105 border-transparent' : 'border-gray-500 border-opacity-20 opacity-70'"
+                        :style="currentPalette.id === p.id ? `background: ${p.grad.from}20; border-color: ${p.grad.from}` : ''">
+                    <div class="text-xs md:text-base font-bold mb-2 truncate" x-text="lang === 'ar' ? p.nameAr : p.nameEn"></div>
+                    <div class="h-2 w-full rounded-full" :style="`background: linear-gradient(to left, ${p.grad.from}, ${p.grad.to})`"></div>
                 </button>
             </template>
         </aside>
 
-        <main class="flex-1 overflow-y-auto p-4 md:p-8 relative flex flex-col items-center justify-start">
-            <div class="w-full max-w-5xl mx-auto space-y-8">
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 relative">
+            <div class="max-w-5xl mx-auto space-y-10">
                 
-                <section class="text-center space-y-6 py-6 relative overflow-hidden">
-                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 blur-[100px] opacity-20" :style="`background: ${currentPalette.grad.from}`"></div>
-                    <h2 class="hero-title text-3xl md:text-6xl font-black leading-tight relative z-10">
-                        <span x-text="lang === 'ar' ? 'صمم واجهاتك بـ' : 'Design your UI with'"></span> <br>
+                <section class="text-center py-10 space-y-6">
+                    <h2 class="hero-title text-4xl md:text-7xl font-black leading-tight">
+                        <span x-text="lang === 'ar' ? 'صمم بذكاء' : 'Vibe Coding'"></span> <br>
                         <span class="text-transparent bg-clip-text" :style="`background-image: linear-gradient(to left, ${currentPalette.grad.from}, ${currentPalette.grad.to})`"
-                              x-text="lang === 'ar' ? 'ألوان متناسقة' : 'Vibe Colors'"></span>
+                              x-text="lang === 'ar' ? 'بألوان متناسقة' : 'With AI Colors'"></span>
                     </h2>
                 </section>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-10">
                     <div class="space-y-6">
-                        <div class="p-6 rounded-3xl border space-y-4 shadow-sm" :style="`border-color: rgba(128,128,128,0.1); background: ${isDark ? '#ffffff05' : '#00000005'}`">
-                            <h3 class="font-bold opacity-70" x-text="lang === 'ar' ? 'تفاعل الأزرار' : 'Button Styles'"></h3>
+                        <div class="p-6 rounded-3xl border shadow-sm backdrop-blur-md" style="border-color: rgba(128,128,128,0.15); background: rgba(128,128,128,0.05)">
+                            <h3 class="font-bold mb-4 opacity-70">UI Components</h3>
                             <div class="flex flex-wrap gap-3">
-                                <button class="px-6 py-2.5 rounded-xl font-bold text-white shadow-lg" :style="`background: linear-gradient(to right, ${currentPalette.grad.from}, ${currentPalette.grad.to})`">Primary</button>
-                                <button class="px-6 py-2.5 rounded-xl font-bold border-2" :style="`border-color: ${currentBtn}; color: ${currentBtn}`">Outline</button>
-                                <button class="px-6 py-2.5 rounded-xl font-bold bg-red-500 text-white">Danger</button>
+                                <button class="px-6 py-3 rounded-xl font-bold text-white shadow-lg" :style="`background: linear-gradient(to right, ${currentPalette.grad.from}, ${currentPalette.grad.to})`">Primary</button>
+                                <button class="px-6 py-3 rounded-xl font-bold border-2" :style="`border-color: ${currentBtn}; color: ${currentBtn}`">Outline</button>
+                                <button class="px-6 py-3 rounded-xl font-bold bg-red-500 text-white">Action</button>
                             </div>
                         </div>
 
-                        <div class="rounded-3xl border overflow-hidden" style="border-color: rgba(128,128,128,0.1)">
-                            <div class="p-4 font-bold border-b text-sm" style="border-color: rgba(128,128,128,0.1)" x-text="lang === 'ar' ? 'قائمة البيانات' : 'Data List'"></div>
-                            <div class="p-4 space-y-3">
-                                <div class="flex justify-between items-center text-sm">
-                                    <span x-text="lang === 'ar' ? 'نشاط المستخدم' : 'Activity'"></span>
-                                    <span class="px-2 py-1 rounded-md text-xs" :style="`background: ${currentBtn}22; color: ${currentBtn}`">Active</span>
-                                </div>
-                                <div class="flex justify-between items-center text-sm border-t pt-3" style="border-color: rgba(128,128,128,0.05)">
-                                    <span x-text="lang === 'ar' ? 'حالة السيرفر' : 'Server Status'"></span>
-                                    <span class="font-bold text-green-500">99.9%</span>
-                                </div>
+                        <div class="rounded-3xl border overflow-hidden backdrop-blur-md" style="border-color: rgba(128,128,128,0.15); background: rgba(128,128,128,0.05)">
+                            <div class="p-4 border-b font-bold flex justify-between" style="border-color: rgba(128,128,128,0.1)">
+                                <span x-text="lang === 'ar' ? 'إحصائيات النظام' : 'System Stats'"></span>
+                                <span class="text-green-500">Live</span>
+                            </div>
+                            <div class="p-5 space-y-4">
+                                <div class="w-full bg-gray-500 bg-opacity-10 h-2 rounded-full overflow-hidden"><div class="h-full" :style="`background: ${currentBtn}; width: 70%`"></div></div>
+                                <div class="w-full bg-gray-500 bg-opacity-10 h-2 rounded-full overflow-hidden"><div class="h-full" :style="`background: ${currentPalette.grad.to}; width: 45%`"></div></div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="p-6 rounded-3xl border-2 flex flex-col justify-between" :style="`border-color: ${currentPalette.grad.from}33`">
-                        <div class="space-y-4">
-                            <div class="h-40 rounded-2xl shadow-inner" :style="`background: linear-gradient(135deg, ${currentPalette.grad.from}, ${currentPalette.grad.to})`"></div>
-                            <h4 class="text-xl font-black" x-text="lang === 'ar' ? 'بطاقة ميزة جديدة' : 'New Feature Card'"></h4>
-                            <p class="text-sm opacity-60 leading-relaxed" x-text="lang === 'ar' ? 'هكذا ستبدو البطاقات في تطبيقك باستخدام هذا التنسيق المذهل.' : 'This is how cards will look in your app using this amazing layout.'"></p>
-                        </div>
-                        <div class="mt-6 flex gap-2">
-                             <div class="w-4 h-4 rounded-full" :style="`background: ${currentPalette.grad.from}`"></div>
-                             <div class="w-4 h-4 rounded-full" :style="`background: ${currentPalette.grad.to}`"></div>
+                    <div class="p-8 rounded-[2.5rem] border-2 flex flex-col justify-between backdrop-blur-sm" :style="`border-color: ${currentPalette.grad.from}44; background: ${currentPalette.grad.from}05`">
+                        <div class="space-y-6">
+                            <div class="h-48 rounded-3xl shadow-2xl" :style="`background: linear-gradient(135deg, ${currentPalette.grad.from}, ${currentPalette.grad.to})`"></div>
+                            <h4 class="text-2xl font-black">Visual Experience</h4>
+                            <p class="opacity-70 leading-relaxed">This is a real-world preview of how your interface elements will respond to the selected palette. Perfectly balanced for readability.</p>
                         </div>
                     </div>
                 </div>
 
-                <section class="p-8 border-t flex flex-col md:flex-row items-center justify-between gap-6" style="border-color: rgba(128, 128, 128, 0.1);">
+                <section class="p-10 border-t flex flex-col md:flex-row items-center justify-between gap-6" style="border-color: rgba(128, 128, 128, 0.1);">
                     <div class="text-center md:text-start">
-                        <h3 class="font-bold text-xl mb-1" x-text="lang === 'ar' ? 'انسخ الكود الآن' : 'Copy Prompt'"></h3>
-                        <p class="text-sm opacity-60" x-text="lang === 'ar' ? 'استخدم هذا الأمر مع أدوات الذكاء الاصطناعي.' : 'Use this command with AI tools.'"></p>
+                        <h3 class="font-bold text-2xl mb-2" x-text="lang === 'ar' ? 'نسخ البرومبت' : 'Copy AI Prompt'"></h3>
+                        <p class="opacity-60 text-sm" x-text="lang === 'ar' ? 'انسخ الألوان للوضع الليلي والنهاري بضغطة واحدة.' : 'One click to copy Light & Dark mode settings.'"></p>
                     </div>
                     <button @click="copyPrompt" 
-                            class="w-full md:w-auto px-12 py-5 rounded-2xl font-bold text-lg shadow-xl transition hover:-translate-y-1"
-                            :class="copySuccess ? 'bg-green-600 text-white animate-bounce-short' : 'text-white'"
-                            :style="!copySuccess ? `background-color: ${currentBtn}` : ''">
-                        <span x-text="copySuccess ? (lang === 'ar' ? 'تم النسخ بنجاح!' : 'Copied!') : (lang === 'ar' ? 'نسخ البرومبت' : 'Copy AI Prompt')"></span>
+                            class="w-full md:w-auto px-16 py-5 rounded-2xl font-black text-xl shadow-2xl transition-all"
+                            :class="copySuccess ? 'bg-green-600 text-white animate-bounce' : 'text-white'"
+                            :style="!copySuccess ? `background: ${currentBtn}` : ''">
+                        <span x-text="copySuccess ? 'Copied!' : (lang === 'ar' ? 'نسخ الكود' : 'Copy Now')"></span>
                     </button>
                 </section>
             </div>
@@ -136,53 +137,53 @@
     <script>
         function themePreview() {
             return {
-                isDark: false, lang: 'ar', currentPalette: null, copySuccess: false,
+                isDark: true, lang: 'ar', currentPalette: null, copySuccess: false,
                 palettes: [
-                    { id: 1, nameAr: 'شروق الشمس', nameEn: 'Warm Sunrise', light: { bg: '#FFF7ED', text: '#431407', btn: '#EA580C' }, dark: { bg: '#1A0B02', text: '#FFEDD5', btn: '#F97316' }, grad: { from: '#EA580C', to: '#FBA918' } },
-                    { id: 2, nameAr: 'غابة الزمرد', nameEn: 'Emerald Forest', light: { bg: '#F0FDF4', text: '#064E3B', btn: '#10B981' }, dark: { bg: '#022C22', text: '#D1FAE5', btn: '#34D399' }, grad: { from: '#059669', to: '#34D399' } },
-                    { id: 3, nameAr: 'المحيط العميق', nameEn: 'Deep Ocean', light: { bg: '#ECFEFF', text: '#164E63', btn: '#06B6D4' }, dark: { bg: '#083344', text: '#CFFAFE', btn: '#22D3EE' }, grad: { from: '#0891B2', to: '#22D3EE' } },
-                    { id: 4, nameAr: 'التوت البري', nameEn: 'Wild Berry', light: { bg: '#FDF2F8', text: '#831843', btn: '#DB2777' }, dark: { bg: '#500724', text: '#FCE7F3', btn: '#F43F5E' }, grad: { from: '#BE185D', to: '#F472B6' } },
-                    { id: 5, nameAr: 'فخامة ملكية', nameEn: 'Royal Luxury', light: { bg: '#F8FAFC', text: '#0F172A', btn: '#D97706' }, dark: { bg: '#020617', text: '#F8FAFC', btn: '#F59E0B' }, grad: { from: '#B45309', to: '#FBBF24' } },
+                    { id: 1, nameAr: 'شروق الشمس', nameEn: 'Warm Sunrise', light: { bg: '#FFF7ED', text: '#431407', btn: '#EA580C' }, dark: { bg: '#0D0804', text: '#FFEDD5', btn: '#F97316' }, grad: { from: '#EA580C', to: '#FBA918' } },
+                    { id: 2, nameAr: 'غابة الزمرد', nameEn: 'Emerald Forest', light: { bg: '#F0FDF4', text: '#064E3B', btn: '#10B981' }, dark: { bg: '#020D0A', text: '#D1FAE5', btn: '#34D399' }, grad: { from: '#059669', to: '#34D399' } },
+                    { id: 3, nameAr: 'المحيط العميق', nameEn: 'Deep Ocean', light: { bg: '#ECFEFF', text: '#164E63', btn: '#06B6D4' }, dark: { bg: '#02090D', text: '#CFFAFE', btn: '#22D3EE' }, grad: { from: '#0891B2', to: '#22D3EE' } },
+                    { id: 4, nameAr: 'التوت البري', nameEn: 'Wild Berry', light: { bg: '#FDF2F8', text: '#831843', btn: '#DB2777' }, dark: { bg: '#100208', text: '#FCE7F3', btn: '#F43F5E' }, grad: { from: '#BE185D', to: '#F472B6' } },
+                    { id: 5, nameAr: 'فخامة ملكية', nameEn: 'Royal Luxury', light: { bg: '#F8FAFC', text: '#0F172A', btn: '#D97706' }, dark: { bg: '#020408', text: '#F8FAFC', btn: '#F59E0B' }, grad: { from: '#B45309', to: '#FBBF24' } },
                     { id: 6, nameAr: 'السايبر بانك', nameEn: 'Cyberpunk', light: { bg: '#F4F4F5', text: '#18181B', btn: '#65A30D' }, dark: { bg: '#09090B', text: '#FAFAFA', btn: '#A3E635' }, grad: { from: '#4D7C0F', to: '#BEF264' } },
-                    { id: 7, nameAr: 'رمال الصحراء', nameEn: 'Desert Sands', light: { bg: '#FAF4ED', text: '#5C2D16', btn: '#D97757' }, dark: { bg: '#2D160B', text: '#F3E8DC', btn: '#E28C6E' }, grad: { from: '#C05C3A', to: '#EAB096' } },
-                    { id: 8, nameAr: 'سماء الغسق', nameEn: 'Dusk Sky', light: { bg: '#EEF2FF', text: '#312E81', btn: '#F43F5E' }, dark: { bg: '#1E1B4B', text: '#E0E7FF', btn: '#FB7185' }, grad: { from: '#4F46E5', to: '#F43F5E' } },
-                    { id: 9, nameAr: 'أحمر قرمزي', nameEn: 'Crimson Red', light: { bg: '#FEF2F2', text: '#7F1D1D', btn: '#DC2626' }, dark: { bg: '#450A0A', text: '#FEE2E2', btn: '#EF4444' }, grad: { from: '#B91C1C', to: '#F87171' } },
-                    { id: 10, nameAr: 'أزرق ياقوتي', nameEn: 'Sapphire Blue', light: { bg: '#F1F5F9', text: '#334155', btn: '#2563EB' }, dark: { bg: '#0F172A', text: '#CBD5E1', btn: '#3B82F6' }, grad: { from: '#1D4ED8', to: '#60A5FA' } },
-                    { id: 11, nameAr: 'حصاد الخريف', nameEn: 'Autumn Harvest', light: { bg: '#FEFCE8', text: '#713F12', btn: '#CA8A04' }, dark: { bg: '#422006', text: '#FEF08A', btn: '#EAB308' }, grad: { from: '#A16207', to: '#FDE047' } },
-                    { id: 12, nameAr: 'لافندر هادئ', nameEn: 'Calm Lavender', light: { bg: '#FAF5FF', text: '#581C87', btn: '#9333EA' }, dark: { bg: '#3B0764', text: '#E9D5FF', btn: '#A855F7' }, grad: { from: '#7E22CE', to: '#C084FC' } },
-                    { id: 13, nameAr: 'حمضيات', nameEn: 'Tropical Citrus', light: { bg: '#F0FDFA', text: '#115E59', btn: '#EAB308' }, dark: { bg: '#042F2E', text: '#CCFBF1', btn: '#FDE047' }, grad: { from: '#0F766E', to: '#FACC15' } },
-                    { id: 14, nameAr: 'قهوة وكريمة', nameEn: 'Coffee & Cream', light: { bg: '#FDF8F6', text: '#4A3022', btn: '#8B5E3C' }, dark: { bg: '#2C1E16', text: '#EADACF', btn: '#B68D6A' }, grad: { from: '#63402C', to: '#D4B89F' } },
+                    { id: 7, nameAr: 'رمال الصحراء', nameEn: 'Desert Sands', light: { bg: '#FAF4ED', text: '#5C2D16', btn: '#D97757' }, dark: { bg: '#1A0D06', text: '#F3E8DC', btn: '#E28C6E' }, grad: { from: '#C05C3A', to: '#EAB096' } },
+                    { id: 8, nameAr: 'سماء الغسق', nameEn: 'Dusk Sky', light: { bg: '#EEF2FF', text: '#312E81', btn: '#F43F5E' }, dark: { bg: '#05051A', text: '#E0E7FF', btn: '#FB7185' }, grad: { from: '#4F46E5', to: '#F43F5E' } },
+                    { id: 9, nameAr: 'أحمر قرمزي', nameEn: 'Crimson Red', light: { bg: '#FEF2F2', text: '#7F1D1D', btn: '#DC2626' }, dark: { bg: '#1A0404', text: '#FEE2E2', btn: '#EF4444' }, grad: { from: '#B91C1C', to: '#F87171' } },
+                    { id: 10, nameAr: 'أزرق ياقوتي', nameEn: 'Sapphire Blue', light: { bg: '#F1F5F9', text: '#334155', btn: '#2563EB' }, dark: { bg: '#050810', text: '#CBD5E1', btn: '#3B82F6' }, grad: { from: '#1D4ED8', to: '#60A5FA' } },
+                    { id: 11, nameAr: 'حصاد الخريف', nameEn: 'Autumn Harvest', light: { bg: '#FEFCE8', text: '#713F12', btn: '#CA8A04' }, dark: { bg: '#1A0F02', text: '#FEF08A', btn: '#EAB308' }, grad: { from: '#A16207', to: '#FDE047' } },
+                    { id: 12, nameAr: 'لافندر هادئ', nameEn: 'Calm Lavender', light: { bg: '#FAF5FF', text: '#581C87', btn: '#9333EA' }, dark: { bg: '#0F021A', text: '#E9D5FF', btn: '#A855F7' }, grad: { from: '#7E22CE', to: '#C084FC' } },
+                    { id: 13, nameAr: 'حمضيات', nameEn: 'Tropical Citrus', light: { bg: '#F0FDFA', text: '#115E59', btn: '#EAB308' }, dark: { bg: '#021A1A', text: '#CCFBF1', btn: '#FDE047' }, grad: { from: '#0F766E', to: '#FACC15' } },
+                    { id: 14, nameAr: 'قهوة وكريمة', nameEn: 'Coffee & Cream', light: { bg: '#FDF8F6', text: '#4A3022', btn: '#8B5E3C' }, dark: { bg: '#1A120D', text: '#EADACF', btn: '#B68D6A' }, grad: { from: '#63402C', to: '#D4B89F' } },
                     { id: 15, nameAr: 'لؤلؤ أحادي', nameEn: 'Monochrome Pearl', light: { bg: '#FFFFFF', text: '#171717', btn: '#404040' }, dark: { bg: '#0A0A0A', text: '#F5F5F5', btn: '#A3A3A3' }, grad: { from: '#262626', to: '#D4D4D4' } },
-                    { id: 16, nameAr: 'شاي الماتشا', nameEn: 'Matcha Tea', light: { bg: '#F4FBEB', text: '#2F4F2F', btn: '#86A760' }, dark: { bg: '#1E2B1E', text: '#E8F0E8', btn: '#A3C67A' }, grad: { from: '#86A760', to: '#C5E1A5' } },
-                    { id: 17, nameAr: 'نيون منتصف الليل', nameEn: 'Midnight Neon', light: { bg: '#F3E8FF', text: '#3B0764', btn: '#D946EF' }, dark: { bg: '#0F001A', text: '#FDF4FF', btn: '#E879F9' }, grad: { from: '#C026D3', to: '#E879F9' } },
-                    { id: 18, nameAr: 'جليد القطب', nameEn: 'Polar Ice', light: { bg: '#F0F9FF', text: '#0C4A6E', btn: '#38BDF8' }, dark: { bg: '#082F49', text: '#E0F2FE', btn: '#7DD3FC' }, grad: { from: '#0284C7', to: '#7DD3FC' } },
-                    { id: 19, nameAr: 'حمم بركانية', nameEn: 'Volcanic Lava', light: { bg: '#FFF1F2', text: '#881337', btn: '#E11D48' }, dark: { bg: '#170505', text: '#FFE4E6', btn: '#F43F5E' }, grad: { from: '#BE123C', to: '#FB7185' } },
-                    { id: 20, nameAr: 'خوخ مخملي', nameEn: 'Velvet Peach', light: { bg: '#FFF6F5', text: '#5C2723', btn: '#F87171' }, dark: { bg: '#2A1211', text: '#FEE2E2', btn: '#FCA5A5' }, grad: { from: '#EF4444', to: '#FCA5A5' } },
-                    { id: 21, nameAr: 'موجة كلاسيكية', nameEn: 'Classic Wave', light: { bg: '#F5F3FF', text: '#2E1065', btn: '#8B5CF6' }, dark: { bg: '#1E0E38', text: '#EDE9FE', btn: '#A78BFA' }, grad: { from: '#7C3AED', to: '#C4B5FD' } },
-                    { id: 22, nameAr: 'طحالب وخشب', nameEn: 'Moss & Wood', light: { bg: '#FAFAF9', text: '#44403C', btn: '#65A30D' }, dark: { bg: '#1C1917', text: '#F5F5F4', btn: '#84CC16' }, grad: { from: '#4D7C0F', to: '#A3E635' } },
-                    { id: 23, nameAr: 'غزل البنات', nameEn: 'Cotton Candy', light: { bg: '#FDF2F8', text: '#831843', btn: '#F472B6' }, dark: { bg: '#310A1F', text: '#FCE7F3', btn: '#F9A8D4' }, grad: { from: '#EC4899', to: '#FBCFE8' } },
-                    { id: 24, nameAr: 'الساعة الذهبية', nameEn: 'Golden Hour', light: { bg: '#FFFBEB', text: '#78350F', btn: '#D97706' }, dark: { bg: '#2D1503', text: '#FEF3C7', btn: '#F59E0B' }, grad: { from: '#B45309', to: '#FCD34D' } },
-                    { id: 25, nameAr: 'فضاء سحيق', nameEn: 'Deep Space', light: { bg: '#F8FAFC', text: '#0F172A', btn: '#475569' }, dark: { bg: '#020617', text: '#F8FAFC', btn: '#94A3B8' }, grad: { from: '#334155', to: '#CBD5E1' } },
-                    { id: 26, nameAr: 'نعناع وشوكولاتة', nameEn: 'Mint & Choco', light: { bg: '#ECFDF5', text: '#064E3B', btn: '#10B981' }, dark: { bg: '#022C22', text: '#D1FAE5', btn: '#34D399' }, grad: { from: '#059669', to: '#6EE7B7' } },
-                    { id: 27, nameAr: 'زهرة الأوركيد', nameEn: 'Orchid Flower', light: { bg: '#FAF5FF', text: '#581C87', btn: '#D946EF' }, dark: { bg: '#3B0764', text: '#F3E8FF', btn: '#E879F9' }, grad: { from: '#A21CAF', to: '#F0ABFC' } },
-                    { id: 28, nameAr: 'صدأ وتيل', nameEn: 'Rust & Teal', light: { bg: '#F0FDFA', text: '#134E4A', btn: '#0D9488' }, dark: { bg: '#042F2E', text: '#CCFBF1', btn: '#14B8A6' }, grad: { from: '#0F766E', to: '#5EEAD4' } },
-                    { id: 29, nameAr: 'صخر وورد', nameEn: 'Rock & Rose', light: { bg: '#F1F5F9', text: '#334155', btn: '#F43F5E' }, dark: { bg: '#0F172A', text: '#E2E8F0', btn: '#FB7185' }, grad: { from: '#E11D48', to: '#FDA4AF' } },
-                    { id: 30, nameAr: 'ليموناضة', nameEn: 'Lemonade', light: { bg: '#FEFCE8', text: '#713F12', btn: '#EAB308' }, dark: { bg: '#422006', text: '#FEF08A', btn: '#FACC15' }, grad: { from: '#CA8A04', to: '#FDE047' } },
-                    { id: 31, nameAr: 'شفق قطبي', nameEn: 'Aurora', light: { bg: '#F0FDF4', text: '#064E3B', btn: '#22C55E' }, dark: { bg: '#022C22', text: '#DCFCE7', btn: '#4ADE80' }, grad: { from: '#16A34A', to: '#86EFAC' } },
-                    { id: 32, nameAr: 'فخار وتيراكوتا', nameEn: 'Clay & Terracotta', light: { bg: '#FFF7ED', text: '#7C2D12', btn: '#EA580C' }, dark: { bg: '#3B150A', text: '#FFEDD5', btn: '#F97316' }, grad: { from: '#C2410C', to: '#FDBA74' } },
-                    { id: 33, nameAr: 'إنديجو كهربائي', nameEn: 'Electric Indigo', light: { bg: '#EEF2FF', text: '#312E81', btn: '#4F46E5' }, dark: { bg: '#1E1B4B', text: '#E0E7FF', btn: '#6366F1' }, grad: { from: '#4338CA', to: '#A5B4FC' } },
-                    { id: 34, nameAr: 'ساكورا (كرز)', nameEn: 'Sakura Blossom', light: { bg: '#FEF2F2', text: '#7F1D1D', btn: '#F43F5E' }, dark: { bg: '#450A0A', text: '#FEE2E2', btn: '#FB7185' }, grad: { from: '#E11D48', to: '#FDA4AF' } },
-                    { id: 35, nameAr: 'جينز عتيق', nameEn: 'Vintage Denim', light: { bg: '#F8FAFC', text: '#1E293B', btn: '#3B82F6' }, dark: { bg: '#0F172A', text: '#F1F5F9', btn: '#60A5FA' }, grad: { from: '#2563EB', to: '#93C5FD' } },
+                    { id: 16, nameAr: 'شاي الماتشا', nameEn: 'Matcha Tea', light: { bg: '#F4FBEB', text: '#2F4F2F', btn: '#86A760' }, dark: { bg: '#0D1A0D', text: '#E8F0E8', btn: '#A3C67A' }, grad: { from: '#86A760', to: '#C5E1A5' } },
+                    { id: 17, nameAr: 'نيون منتصف الليل', nameEn: 'Midnight Neon', light: { bg: '#F3E8FF', text: '#3B0764', btn: '#D946EF' }, dark: { bg: '#0A0010', text: '#FDF4FF', btn: '#E879F9' }, grad: { from: '#C026D3', to: '#E879F9' } },
+                    { id: 18, nameAr: 'جليد القطب', nameEn: 'Polar Ice', light: { bg: '#F0F9FF', text: '#0C4A6E', btn: '#38BDF8' }, dark: { bg: '#021A2B', text: '#E0F2FE', btn: '#7DD3FC' }, grad: { from: '#0284C7', to: '#7DD3FC' } },
+                    { id: 19, nameAr: 'حمم بركانية', nameEn: 'Volcanic Lava', light: { bg: '#FFF1F2', text: '#881337', btn: '#E11D48' }, dark: { bg: '#1A0202', text: '#FFE4E6', btn: '#F43F5E' }, grad: { from: '#BE123C', to: '#FB7185' } },
+                    { id: 20, nameAr: 'خوخ مخملي', nameEn: 'Velvet Peach', light: { bg: '#FFF6F5', text: '#5C2723', btn: '#F87171' }, dark: { bg: '#1A0B0A', text: '#FEE2E2', btn: '#FCA5A5' }, grad: { from: '#EF4444', to: '#FCA5A5' } },
+                    { id: 21, nameAr: 'موجة كلاسيكية', nameEn: 'Classic Wave', light: { bg: '#F5F3FF', text: '#2E1065', btn: '#8B5CF6' }, dark: { bg: '#0D051A', text: '#EDE9FE', btn: '#A78BFA' }, grad: { from: '#7C3AED', to: '#C4B5FD' } },
+                    { id: 22, nameAr: 'طحالب وخشب', nameEn: 'Moss & Wood', light: { bg: '#FAFAF9', text: '#44403C', btn: '#65A30D' }, dark: { bg: '#100E0D', text: '#F5F5F4', btn: '#84CC16' }, grad: { from: '#4D7C0F', to: '#A3E635' } },
+                    { id: 23, nameAr: 'غزل البنات', nameEn: 'Cotton Candy', light: { bg: '#FDF2F8', text: '#831843', btn: '#F472B6' }, dark: { bg: '#1A050D', text: '#FCE7F3', btn: '#F9A8D4' }, grad: { from: '#EC4899', to: '#FBCFE8' } },
+                    { id: 24, nameAr: 'الساعة الذهبية', nameEn: 'Golden Hour', light: { bg: '#FFFBEB', text: '#78350F', btn: '#D97706' }, dark: { bg: '#1A0C02', text: '#FEF3C7', btn: '#F59E0B' }, grad: { from: '#B45309', to: '#FCD34D' } },
+                    { id: 25, nameAr: 'فضاء سحيق', nameEn: 'Deep Space', light: { bg: '#F8FAFC', text: '#0F172A', btn: '#475569' }, dark: { bg: '#01040D', text: '#F8FAFC', btn: '#94A3B8' }, grad: { from: '#334155', to: '#CBD5E1' } },
+                    { id: 26, nameAr: 'نعناع وشوكولاتة', nameEn: 'Mint & Choco', light: { bg: '#ECFDF5', text: '#064E3B', btn: '#10B981' }, dark: { bg: '#021A14', text: '#D1FAE5', btn: '#34D399' }, grad: { from: '#059669', to: '#6EE7B7' } },
+                    { id: 27, nameAr: 'زهرة الأوركيد', nameEn: 'Orchid Flower', light: { bg: '#FAF5FF', text: '#581C87', btn: '#D946EF' }, dark: { bg: '#1A021A', text: '#F3E8FF', btn: '#E879F9' }, grad: { from: '#A21CAF', to: '#F0ABFC' } },
+                    { id: 28, nameAr: 'صدأ وتيل', nameEn: 'Rust & Teal', light: { bg: '#F0FDFA', text: '#134E4A', btn: '#0D9488' }, dark: { bg: '#021A1A', text: '#CCFBF1', btn: '#14B8A6' }, grad: { from: '#0F766E', to: '#5EEAD4' } },
+                    { id: 29, nameAr: 'صخر وورد', nameEn: 'Rock & Rose', light: { bg: '#F1F5F9', text: '#334155', btn: '#F43F5E' }, dark: { bg: '#05081A', text: '#E2E8F0', btn: '#FB7185' }, grad: { from: '#E11D48', to: '#FDA4AF' } },
+                    { id: 30, nameAr: 'ليموناضة', nameEn: 'Lemonade', light: { bg: '#FEFCE8', text: '#713F12', btn: '#EAB308' }, dark: { bg: '#1A1A02', text: '#FEF08A', btn: '#FACC15' }, grad: { from: '#CA8A04', to: '#FDE047' } },
+                    { id: 31, nameAr: 'شفق قطبي', nameEn: 'Aurora', light: { bg: '#F0FDF4', text: '#064E3B', btn: '#22C55E' }, dark: { bg: '#021A10', text: '#DCFCE7', btn: '#4ADE80' }, grad: { from: '#16A34A', to: '#86EFAC' } },
+                    { id: 32, nameAr: 'فخار وتيراكوتا', nameEn: 'Clay & Terracotta', light: { bg: '#FFF7ED', text: '#7C2D12', btn: '#EA580C' }, dark: { bg: '#1A0A04', text: '#FFEDD5', btn: '#F97316' }, grad: { from: '#C2410C', to: '#FDBA74' } },
+                    { id: 33, nameAr: 'إنديجو كهربائي', nameEn: 'Electric Indigo', light: { bg: '#EEF2FF', text: '#312E81', btn: '#4F46E5' }, dark: { bg: '#0D0D1A', text: '#E0E7FF', btn: '#6366F1' }, grad: { from: '#4338CA', to: '#A5B4FC' } },
+                    { id: 34, nameAr: 'ساكورا (كرز)', nameEn: 'Sakura Blossom', light: { bg: '#FEF2F2', text: '#7F1D1D', btn: '#F43F5E' }, dark: { bg: '#1A0404', text: '#FEE2E2', btn: '#FB7185' }, grad: { from: '#E11D48', to: '#FDA4AF' } },
+                    { id: 35, nameAr: 'جينز عتيق', nameEn: 'Vintage Denim', light: { bg: '#F8FAFC', text: '#1E293B', btn: '#3B82F6' }, dark: { bg: '#050D1A', text: '#F1F5F9', btn: '#60A5FA' }, grad: { from: '#2563EB', to: '#93C5FD' } },
                     { id: 36, nameAr: 'نعناع نيون', nameEn: 'Neon Mint', light: { bg: '#FAFAFA', text: '#171717', btn: '#14B8A6' }, dark: { bg: '#0A0A0A', text: '#FAFAFA', btn: '#2DD4BF' }, grad: { from: '#0D9488', to: '#5EEAD4' } },
-                    { id: 37, nameAr: 'شعاب مرجانية', nameEn: 'Coral Reef', light: { bg: '#FFF1F2', text: '#881337', btn: '#F43F5E' }, dark: { bg: '#2A0611', text: '#FFE4E6', btn: '#FB7185' }, grad: { from: '#E11D48', to: '#FDA4AF' } },
-                    { id: 38, nameAr: 'شفق المساء', nameEn: 'Evening Twilight', light: { bg: '#F8FAFC', text: '#0F172A', btn: '#8B5CF6' }, dark: { bg: '#020617', text: '#F8FAFC', btn: '#A78BFA' }, grad: { from: '#7C3AED', to: '#C4B5FD' } },
-                    { id: 39, nameAr: 'فستق حلبي', nameEn: 'Pistachio', light: { bg: '#F0FDF4', text: '#14532D', btn: '#22C55E' }, dark: { bg: '#052E16', text: '#DCFCE7', btn: '#4ADE80' }, grad: { from: '#16A34A', to: '#86EFAC' } },
+                    { id: 37, nameAr: 'شعاب مرجانية', nameEn: 'Coral Reef', light: { bg: '#FFF1F2', text: '#881337', btn: '#F43F5E' }, dark: { bg: '#1A0208', text: '#FFE4E6', btn: '#FB7185' }, grad: { from: '#E11D48', to: '#FDA4AF' } },
+                    { id: 38, nameAr: 'شفق المساء', nameEn: 'Evening Twilight', light: { bg: '#F8FAFC', text: '#0F172A', btn: '#8B5CF6' }, dark: { bg: '#050510', text: '#F8FAFC', btn: '#A78BFA' }, grad: { from: '#7C3AED', to: '#C4B5FD' } },
+                    { id: 39, nameAr: 'فستق حلبي', nameEn: 'Pistachio', light: { bg: '#F0FDF4', text: '#14532D', btn: '#22C55E' }, dark: { bg: '#021A0A', text: '#DCFCE7', btn: '#4ADE80' }, grad: { from: '#16A34A', to: '#86EFAC' } },
                     { id: 40, nameAr: 'أسود وذهب', nameEn: 'Black & Gold', light: { bg: '#FAFAFA', text: '#000000', btn: '#D97706' }, dark: { bg: '#000000', text: '#FFFFFF', btn: '#F59E0B' }, grad: { from: '#B45309', to: '#FCD34D' } },
-                    { id: 41, nameAr: 'أميثيست', nameEn: 'Amethyst', light: { bg: '#FAF5FF', text: '#4C1D95', btn: '#7C3AED' }, dark: { bg: '#2E1065', text: '#F3E8FF', btn: '#8B5CF6' }, grad: { from: '#6D28D9', to: '#A78BFA' } },
-                    { id: 42, nameAr: 'بطيخ منعش', nameEn: 'Fresh Watermelon', light: { bg: '#FFF1F2', text: '#831843', btn: '#F43F5E' }, dark: { bg: '#310A1F', text: '#FFE4E6', btn: '#FB7185' }, grad: { from: '#E11D48', to: '#FDA4AF' } },
-                    { id: 43, nameAr: 'خلية نحل', nameEn: 'Honeycomb', light: { bg: '#FFFBEB', text: '#78350F', btn: '#D97706' }, dark: { bg: '#2D1503', text: '#FEF3C7', btn: '#F59E0B' }, grad: { from: '#B45309', to: '#FCD34D' } },
-                    { id: 44, nameAr: 'بحر هائج', nameEn: 'Stormy Sea', light: { bg: '#F1F5F9', text: '#0F172A', btn: '#334155' }, dark: { bg: '#020617', text: '#F1F5F9', btn: '#475569' }, grad: { from: '#1E293B', to: '#64748B' } },
-                    { id: 45, nameAr: 'مارشميلو', nameEn: 'Marshmallow', light: { bg: '#FAFAFA', text: '#3F3F46', btn: '#A1A1AA' }, dark: { bg: '#18181B', text: '#FAFAFA', btn: '#D4D4D8' }, grad: { from: '#71717A', to: '#E4E4E7' } }
+                    { id: 41, nameAr: 'أميثيست', nameEn: 'Amethyst', light: { bg: '#FAF5FF', text: '#4C1D95', btn: '#7C3AED' }, dark: { bg: '#1A052E', text: '#F3E8FF', btn: '#8B5CF6' }, grad: { from: '#6D28D9', to: '#A78BFA' } },
+                    { id: 42, nameAr: 'بطيخ منعش', nameEn: 'Fresh Watermelon', light: { bg: '#FFF1F2', text: '#831843', btn: '#F43F5E' }, dark: { bg: '#1A020D', text: '#FFE4E6', btn: '#FB7185' }, grad: { from: '#E11D48', to: '#FDA4AF' } },
+                    { id: 43, nameAr: 'خلية نحل', nameEn: 'Honeycomb', light: { bg: '#FFFBEB', text: '#78350F', btn: '#D97706' }, dark: { bg: '#1A0C02', text: '#FEF3C7', btn: '#F59E0B' }, grad: { from: '#B45309', to: '#FCD34D' } },
+                    { id: 44, nameAr: 'بحر هائج', nameEn: 'Stormy Sea', light: { bg: '#F1F5F9', text: '#0F172A', btn: '#334155' }, dark: { bg: '#01050A', text: '#F1F5F9', btn: '#475569' }, grad: { from: '#1E293B', to: '#64748B' } },
+                    { id: 45, nameAr: 'مارشميلو', nameEn: 'Marshmallow', light: { bg: '#FAFAFA', text: '#3F3F46', btn: '#A1A1AA' }, dark: { bg: '#0D0D0E', text: '#FAFAFA', btn: '#D4D4D8' }, grad: { from: '#71717A', to: '#E4E4E7' } }
                 ],
                 init() { this.currentPalette = this.palettes[0]; },
                 toggleDarkMode() { this.isDark = !this.isDark; },
@@ -192,9 +193,7 @@
                 get currentBtn() { return this.isDark ? this.currentPalette.dark.btn : this.currentPalette.light.btn; },
                 copyPrompt() {
                     const p = this.currentPalette;
-                    let text = this.lang === 'ar' ? 
-                        `Light: BG ${p.light.bg}, Text ${p.light.text}, Btn ${p.light.btn} | Dark: BG ${p.dark.bg}, Text ${p.dark.text}, Btn ${p.dark.btn}` :
-                        `Light Mode (BG: ${p.light.bg}), Dark Mode (BG: ${p.dark.bg})`;
+                    let text = `AI Palette Prompt:\nLight: BG ${p.light.bg}, Text ${p.light.text}, Btn ${p.light.btn}\nDark: BG ${p.dark.bg}, Text ${p.dark.text}, Btn ${p.dark.btn}\nGradient: ${p.grad.from} to ${p.grad.to}`;
                     navigator.clipboard.writeText(text).then(() => {
                         this.copySuccess = true;
                         setTimeout(() => this.copySuccess = false, 2500);
