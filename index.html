@@ -9,12 +9,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; transition: background-color 0.5s ease; }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.3); border-radius: 10px; }
         
-        /* الهالة المتوهجة */
+        /* تحسين التمرير للقائمة الجانبية */
+        .sidebar-scroll {
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
+        }
+        .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+        .sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(155, 155, 155, 0.5); border-radius: 10px; }
+
+        /* الهالة المتوهجة الملحمية */
         .glow-bg {
             position: fixed;
             top: 50%;
@@ -30,10 +35,10 @@
             transition: all 0.8s ease-in-out;
         }
         .is-dark .glow-bg { opacity: 0.25; filter: blur(150px); }
-        @media (min-width: 1024px) { .hero-title { font-size: 4rem !important; } }
+        @media (min-width: 1024px) { .hero-title { font-size: 3.5rem !important; } }
     </style>
 </head>
-<body class="min-h-screen flex flex-col overflow-hidden"
+<body class="h-screen flex flex-col overflow-hidden"
       :class="isDark ? 'is-dark' : ''"
       x-data="themePreview()"
       :dir="lang === 'ar' ? 'rtl' : 'ltr'"
@@ -57,11 +62,13 @@
     </header>
 
     <div class="flex flex-col md:flex-row flex-1 overflow-hidden">
-        <aside class="w-full md:w-[320px] lg:w-[350px] flex-shrink-0 border-b md:border-b-0 md:border-x flex overflow-x-auto md:overflow-y-auto md:flex-col hide-scrollbar p-3 md:p-5 gap-3 md:gap-4 z-40" style="border-color: rgba(128, 128, 128, 0.1);">
+        <aside class="w-full md:w-[320px] lg:w-[350px] flex-shrink-0 border-b md:border-b-0 md:border-x flex flex-row md:flex-col sidebar-scroll p-3 md:p-5 gap-3 md:gap-4 z-40" 
+               style="border-color: rgba(128, 128, 128, 0.15); background-color: rgba(128, 128, 128, 0.02);">
+            
             <template x-for="p in palettes" :key="p.id">
                 <button @click="currentPalette = p"
-                        class="flex-shrink-0 w-32 md:w-full p-3 md:p-4 rounded-2xl border transition-all duration-300 relative overflow-hidden text-start"
-                        :class="currentPalette.id === p.id ? 'shadow-xl scale-105 border-transparent' : 'border-gray-500 border-opacity-20 opacity-70'"
+                        class="flex-shrink-0 w-32 md:w-full p-3 md:p-4 rounded-2xl border transition-all duration-300 relative overflow-hidden text-start shadow-sm"
+                        :class="currentPalette.id === p.id ? 'shadow-xl scale-[1.02] border-transparent' : 'border-gray-500 border-opacity-20 opacity-60 hover:opacity-100'"
                         :style="currentPalette.id === p.id ? `background: ${p.grad.from}20; border-color: ${p.grad.from}` : ''">
                     <div class="text-xs md:text-base font-bold mb-2 truncate" x-text="lang === 'ar' ? p.nameAr : p.nameEn"></div>
                     <div class="h-2 w-full rounded-full" :style="`background: linear-gradient(to left, ${p.grad.from}, ${p.grad.to})`"></div>
@@ -69,7 +76,7 @@
             </template>
         </aside>
 
-        <main class="flex-1 overflow-y-auto p-4 md:p-8">
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 relative">
             <div class="max-w-5xl mx-auto space-y-10">
                 <section class="text-center py-6">
                     <h2 class="hero-title text-4xl md:text-6xl font-black leading-tight">
@@ -87,6 +94,9 @@
                                 <button class="px-6 py-3 rounded-xl font-bold border-2" :style="`border-color: ${currentBtn}; color: ${currentBtn}`">Outline</button>
                             </div>
                         </div>
+                        <div class="rounded-3xl border overflow-hidden backdrop-blur-md p-5" style="border-color: rgba(128,128,128,0.15); background: rgba(128,128,128,0.05)">
+                             <div class="w-full bg-gray-500 bg-opacity-10 h-2 rounded-full overflow-hidden"><div class="h-full" :style="`background: ${currentBtn}; width: 65%`"></div></div>
+                        </div>
                     </div>
                     <div class="p-8 rounded-[2.5rem] border-2 flex flex-col justify-between backdrop-blur-sm" :style="`border-color: ${currentPalette.grad.from}44; background: ${currentPalette.grad.from}05`">
                         <div class="h-40 rounded-3xl shadow-2xl mb-4" :style="`background: linear-gradient(135deg, ${currentPalette.grad.from}, ${currentPalette.grad.to})`"></div>
@@ -97,19 +107,19 @@
                 <section class="p-8 border-t space-y-8" style="border-color: rgba(128, 128, 128, 0.1);">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                         <button @click="copyFullPrompt" 
-                                class="p-8 rounded-[2rem] border-2 transition-all hover:-translate-y-2 flex flex-col items-center text-center gap-3 shadow-2xl group"
+                                class="p-8 rounded-[2rem] border-2 transition-all hover:-translate-y-2 flex flex-col items-center text-center gap-3 shadow-2xl"
                                 :class="copyFullSuccess ? 'bg-green-600 border-transparent text-white' : ''"
                                 :style="!copyFullSuccess ? `border-color: ${currentBtn}; color: ${currentBtn}` : ''">
                             <span class="font-black text-xl" x-text="copyFullSuccess ? 'Copied Architect Prompt!' : (lang === 'ar' ? 'نسخ البرومبت المتكامل' : 'Copy Smart Prompt')"></span>
-                            <p class="text-xs opacity-70 leading-relaxed" x-text="lang === 'ar' ? 'دليل هندسي كامل يشرح للذكاء الاصطناعي كيفية بناء الهالة المتوهجة وتناسق العناصر.' : 'Full architectural guide for AI to build the glowing aura and UI harmony.'"></p>
+                            <p class="text-xs opacity-70" x-text="lang === 'ar' ? 'دليل هندسي كامل يشرح للذكاء الاصطناعي كيفية بناء الهالة المتوهجة وتناسق العناصر.' : 'Full guide for AI to build the glowing aura and UI harmony.'"></p>
                         </button>
 
                         <button @click="copyColorsOnly" 
-                                class="p-8 rounded-[2rem] border-2 transition-all hover:-translate-y-2 flex flex-col items-center text-center gap-3 shadow-2xl group"
+                                class="p-8 rounded-[2rem] border-2 transition-all hover:-translate-y-2 flex flex-col items-center text-center gap-3 shadow-2xl"
                                 :class="copyColorSuccess ? 'bg-blue-600 border-transparent text-white' : ''"
                                 :style="!copyColorSuccess ? `border-color: ${currentBtn}; color: ${currentBtn}` : ''">
                             <span class="font-black text-xl" x-text="copyColorSuccess ? 'Colors Copied!' : (lang === 'ar' ? 'نسخ الألوان فقط' : 'Copy Colors Only')"></span>
-                            <p class="text-xs opacity-70 leading-relaxed" x-text="lang === 'ar' ? 'نسخ سريع لأكواد الهكس للوضع النهاري والليلي والتدرج فقط.' : 'Quickly copy Hex codes for Light, Dark, and Gradient modes.'"></p>
+                            <p class="text-xs opacity-70" x-text="lang === 'ar' ? 'نسخ سريع لأكواد الهكس للوضع النهاري والليلي والتدرج فقط.' : 'Quickly copy Hex codes for Light, Dark, and Gradient modes.'"></p>
                         </button>
                     </div>
                 </section>
@@ -175,43 +185,27 @@
                 get currentText() { return this.isDark ? this.currentPalette.dark.text : this.currentPalette.light.text; },
                 get currentBtn() { return this.isDark ? this.currentPalette.dark.btn : this.currentPalette.light.btn; },
                 
-                // نسخ البرومبت المعماري الكامل
+                // نسخ البرومبت المعماري المتكامل
                 copyFullPrompt() {
                     const p = this.currentPalette;
-                    const text = `
-Act as a professional UI/UX Developer. Please apply the following visual identity to my project with specific attention to the "Glow Aesthetic":
-
-1. **Color Variables**:
-   - Light Mode: Background [${p.light.bg}], Text [${p.light.text}], Primary Action [${p.light.btn}]
-   - Dark Mode: Background [${p.dark.bg}], Text [${p.dark.text}], Primary Action [${p.dark.btn}]
-   - Accents: Gradient From [${p.grad.from}] To [${p.grad.to}]
-
-2. **The "Glow Aura" Effect**:
-   - Implement a fixed background element (z-index: -1).
-   - Style: Radial gradient using the accent colors, centered on screen.
-   - Effect: Apply a heavy 120px to 150px blur.
-   - Opacity: 15% in Light Mode, 25% in Dark Mode to ensure a high-end atmosphere.
-
-3. **UI Elements Implementation**:
-   - Use the Primary Action color for main buttons, progress bars, and active states.
-   - Apply smooth 500ms transitions for all color changes (Background & Text).
-   - Containers should have 2xl (approx 1.5rem) rounded corners and a subtle backdrop-blur (10px) effect.
-
-4. **Tone & Logic**: Modern, clean, high-contrast "Vibe Coding" aesthetic. Ensure excellent readability for all text elements.
-`;
-                    navigator.clipboard.writeText(text).then(() => {
-                        this.copyFullSuccess = true;
-                        setTimeout(() => this.copyFullSuccess = false, 2500);
-                    });
+                    const text = `Act as a professional UI/UX Developer. Please apply the following visual identity with attention to the "Glow Aesthetic":
+1. Colors: Light [BG:${p.light.bg}, Text:${p.light.text}, Btn:${p.light.btn}] | Dark [BG:${p.dark.bg}, Text:${p.dark.text}, Btn:${p.dark.btn}]
+2. Glow Aura: Fixed background radial-gradient using [${p.grad.from}] to [${p.grad.to}] (Blur: 120px, Opacity: 20%).
+3. Details: 2xl rounded corners, backdrop-blur(10px), and smooth 500ms transitions.`;
+                    this.doCopy(text, 'full');
                 },
 
-                // نسخ الألوان فقط بشكل سريع
+                // نسخ الألوان فقط
                 copyColorsOnly() {
                     const p = this.currentPalette;
-                    const text = `Colors Only:\nLight (BG: ${p.light.bg}, Text: ${p.light.text}, Btn: ${p.light.btn})\nDark (BG: ${p.dark.bg}, Text: ${p.dark.text}, Btn: ${p.dark.btn})\nGradient: ${p.grad.from} to ${p.grad.to}`;
+                    const text = `Light: ${p.light.bg}, ${p.light.text}, ${p.light.btn} | Dark: ${p.dark.bg}, ${p.dark.text}, ${p.dark.btn} | Grad: ${p.grad.from}-${p.grad.to}`;
+                    this.doCopy(text, 'color');
+                },
+
+                doCopy(text, type) {
                     navigator.clipboard.writeText(text).then(() => {
-                        this.copyColorSuccess = true;
-                        setTimeout(() => this.copyColorSuccess = false, 2500);
+                        if(type === 'full') { this.copyFullSuccess = true; setTimeout(() => this.copyFullSuccess = false, 2500); }
+                        else { this.copyColorSuccess = true; setTimeout(() => this.copyColorSuccess = false, 2500); }
                     });
                 }
             }
