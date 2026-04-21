@@ -14,6 +14,7 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.3); border-radius: 10px; }
         
+        /* الهالة المتوهجة */
         .glow-bg {
             position: fixed;
             top: 50%;
@@ -49,8 +50,8 @@
                 <span class="text-sm opacity-60" x-text="`(${palettes.length})`"></span>
             </h1>
             <div class="flex items-center gap-2 md:gap-4">
-                <button @click="toggleLang" class="px-4 py-2 rounded-full font-bold text-sm border transition shadow-sm" :style="`border-color: ${currentBtn}; color: ${currentBtn}`" x-text="lang === 'ar' ? 'EN' : 'عربي'"></button>
-                <button @click="toggleDarkMode" class="w-10 h-10 rounded-full flex items-center justify-center border transition shadow-sm" :style="`border-color: ${currentBtn}; color: ${currentBtn}`" x-text="isDark ? '☀️' : '🌙'"></button>
+                <button @click="toggleLang" class="px-4 py-2 rounded-full font-bold text-sm border transition" :style="`border-color: ${currentBtn}; color: ${currentBtn}`" x-text="lang === 'ar' ? 'EN' : 'عربي'"></button>
+                <button @click="toggleDarkMode" class="w-10 h-10 rounded-full flex items-center justify-center border transition" :style="`border-color: ${currentBtn}; color: ${currentBtn}`" x-text="isDark ? '☀️' : '🌙'"></button>
             </div>
         </div>
     </header>
@@ -86,9 +87,6 @@
                                 <button class="px-6 py-3 rounded-xl font-bold border-2" :style="`border-color: ${currentBtn}; color: ${currentBtn}`">Outline</button>
                             </div>
                         </div>
-                        <div class="rounded-3xl border overflow-hidden backdrop-blur-md p-5" style="border-color: rgba(128,128,128,0.15); background: rgba(128,128,128,0.05)">
-                             <div class="w-full bg-gray-500 bg-opacity-10 h-2 rounded-full overflow-hidden"><div class="h-full" :style="`background: ${currentBtn}; width: 65%`"></div></div>
-                        </div>
                     </div>
                     <div class="p-8 rounded-[2.5rem] border-2 flex flex-col justify-between backdrop-blur-sm" :style="`border-color: ${currentPalette.grad.from}44; background: ${currentPalette.grad.from}05`">
                         <div class="h-40 rounded-3xl shadow-2xl mb-4" :style="`background: linear-gradient(135deg, ${currentPalette.grad.from}, ${currentPalette.grad.to})`"></div>
@@ -97,24 +95,21 @@
                 </div>
 
                 <section class="p-8 border-t space-y-8" style="border-color: rgba(128, 128, 128, 0.1);">
-                    <div class="text-center">
-                        <h3 class="font-bold text-2xl mb-4" x-text="lang === 'ar' ? 'خيارات النسخ للذكاء الاصطناعي' : 'AI Copy Options'"></h3>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                         <button @click="copyFullPrompt" 
-                                class="p-6 rounded-3xl border-2 transition-all hover:-translate-y-1 flex flex-col items-center gap-2 shadow-xl"
+                                class="p-8 rounded-[2rem] border-2 transition-all hover:-translate-y-2 flex flex-col items-center text-center gap-3 shadow-2xl group"
                                 :class="copyFullSuccess ? 'bg-green-600 border-transparent text-white' : ''"
                                 :style="!copyFullSuccess ? `border-color: ${currentBtn}; color: ${currentBtn}` : ''">
-                            <span class="font-black text-lg" x-text="copyFullSuccess ? 'Copied Full Prompt!' : (lang === 'ar' ? 'نسخ البرومبت المتكامل' : 'Copy Smart Prompt')"></span>
-                            <span class="text-xs opacity-70" x-text="lang === 'ar' ? '(الألوان + التوهج + أسلوب التصميم)' : '(Colors + Glow + UI Style)'"></span>
+                            <span class="font-black text-xl" x-text="copyFullSuccess ? 'Copied Architect Prompt!' : (lang === 'ar' ? 'نسخ البرومبت المتكامل' : 'Copy Smart Prompt')"></span>
+                            <p class="text-xs opacity-70 leading-relaxed" x-text="lang === 'ar' ? 'دليل هندسي كامل يشرح للذكاء الاصطناعي كيفية بناء الهالة المتوهجة وتناسق العناصر.' : 'Full architectural guide for AI to build the glowing aura and UI harmony.'"></p>
                         </button>
 
                         <button @click="copyColorsOnly" 
-                                class="p-6 rounded-3xl border-2 transition-all hover:-translate-y-1 flex flex-col items-center gap-2 shadow-xl"
+                                class="p-8 rounded-[2rem] border-2 transition-all hover:-translate-y-2 flex flex-col items-center text-center gap-3 shadow-2xl group"
                                 :class="copyColorSuccess ? 'bg-blue-600 border-transparent text-white' : ''"
                                 :style="!copyColorSuccess ? `border-color: ${currentBtn}; color: ${currentBtn}` : ''">
-                            <span class="font-black text-lg" x-text="copyColorSuccess ? 'Colors Copied!' : (lang === 'ar' ? 'نسخ الألوان فقط' : 'Copy Colors Only')"></span>
-                            <span class="text-xs opacity-70" x-text="lang === 'ar' ? '(رموز الهكس للنهاري والليلي)' : '(Hex codes only)'"></span>
+                            <span class="font-black text-xl" x-text="copyColorSuccess ? 'Colors Copied!' : (lang === 'ar' ? 'نسخ الألوان فقط' : 'Copy Colors Only')"></span>
+                            <p class="text-xs opacity-70 leading-relaxed" x-text="lang === 'ar' ? 'نسخ سريع لأكواد الهكس للوضع النهاري والليلي والتدرج فقط.' : 'Quickly copy Hex codes for Light, Dark, and Gradient modes.'"></p>
                         </button>
                     </div>
                 </section>
@@ -180,28 +175,43 @@
                 get currentText() { return this.isDark ? this.currentPalette.dark.text : this.currentPalette.light.text; },
                 get currentBtn() { return this.isDark ? this.currentPalette.dark.btn : this.currentPalette.light.btn; },
                 
-                // نسخ البرومبت الكامل
+                // نسخ البرومبت المعماري الكامل
                 copyFullPrompt() {
                     const p = this.currentPalette;
-                    const text = `Act as a UI/UX Developer. Apply this theme:
-- Light Mode: BG [${p.light.bg}], Text [${p.light.text}], Primary [${p.light.btn}]
-- Dark Mode: BG [${p.dark.bg}], Text [${p.dark.text}], Primary [${p.dark.btn}]
-- Gradient: From [${p.grad.from}] To [${p.grad.to}]
-- Visual Effect: Add a fixed background radial-glow (Blur: 120px, Opacity: 20%).`;
-                    this.doCopy(text, 'full');
+                    const text = `
+Act as a professional UI/UX Developer. Please apply the following visual identity to my project with specific attention to the "Glow Aesthetic":
+
+1. **Color Variables**:
+   - Light Mode: Background [${p.light.bg}], Text [${p.light.text}], Primary Action [${p.light.btn}]
+   - Dark Mode: Background [${p.dark.bg}], Text [${p.dark.text}], Primary Action [${p.dark.btn}]
+   - Accents: Gradient From [${p.grad.from}] To [${p.grad.to}]
+
+2. **The "Glow Aura" Effect**:
+   - Implement a fixed background element (z-index: -1).
+   - Style: Radial gradient using the accent colors, centered on screen.
+   - Effect: Apply a heavy 120px to 150px blur.
+   - Opacity: 15% in Light Mode, 25% in Dark Mode to ensure a high-end atmosphere.
+
+3. **UI Elements Implementation**:
+   - Use the Primary Action color for main buttons, progress bars, and active states.
+   - Apply smooth 500ms transitions for all color changes (Background & Text).
+   - Containers should have 2xl (approx 1.5rem) rounded corners and a subtle backdrop-blur (10px) effect.
+
+4. **Tone & Logic**: Modern, clean, high-contrast "Vibe Coding" aesthetic. Ensure excellent readability for all text elements.
+`;
+                    navigator.clipboard.writeText(text).then(() => {
+                        this.copyFullSuccess = true;
+                        setTimeout(() => this.copyFullSuccess = false, 2500);
+                    });
                 },
 
-                // نسخ الألوان فقط
+                // نسخ الألوان فقط بشكل سريع
                 copyColorsOnly() {
                     const p = this.currentPalette;
-                    const text = `Light: ${p.light.bg}, ${p.light.text}, ${p.light.btn} | Dark: ${p.dark.bg}, ${p.dark.text}, ${p.dark.btn} | Grad: ${p.grad.from}-${p.grad.to}`;
-                    this.doCopy(text, 'color');
-                },
-
-                doCopy(text, type) {
+                    const text = `Colors Only:\nLight (BG: ${p.light.bg}, Text: ${p.light.text}, Btn: ${p.light.btn})\nDark (BG: ${p.dark.bg}, Text: ${p.dark.text}, Btn: ${p.dark.btn})\nGradient: ${p.grad.from} to ${p.grad.to}`;
                     navigator.clipboard.writeText(text).then(() => {
-                        if(type === 'full') { this.copyFullSuccess = true; setTimeout(() => this.copyFullSuccess = false, 2000); }
-                        else { this.copyColorSuccess = true; setTimeout(() => this.copyColorSuccess = false, 2000); }
+                        this.copyColorSuccess = true;
+                        setTimeout(() => this.copyColorSuccess = false, 2500);
                     });
                 }
             }
