@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VibePalette Embed</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>body{font-family:system-ui,sans-serif;margin:0;padding:1rem}</style>
+</head>
+<body x-data="embedApp()" x-init="init()">
+    <template x-if="palette">
+        <div class="rounded-2xl border p-4 space-y-3" :style="`border-color:${palette.grad.from}44;background:${palette.light.bg}`">
+            <div class="font-bold text-lg" :style="`color:${palette.light.text}`" x-text="palette.nameEn"></div>
+            <div class="h-3 rounded-full" :style="`background:linear-gradient(90deg,${palette.grad.from},${palette.grad.to})`"></div>
+            <div class="flex flex-wrap gap-2">
+                <template x-for="c in colors" :key="c">
+                    <div class="w-10 h-10 rounded-lg border" :style="`background:${c}`" :title="c"></div>
+                </template>
+            </div>
+            <a :href="fullUrl" target="_blank" class="text-xs underline opacity-70">Open in VibePalette →</a>
+        </div>
+    </template>
+    <p x-show="!palette" class="opacity-50 text-sm">Loading palette…</p>
+    <script>
+        function embedApp() {
+            return {
+                palette: null,
+                colors: [],
+                fullUrl: '',
+                async init() {
+                    const id = parseInt(new URLSearchParams(location.search).get('p') || '8', 10);
+                    const base = location.href.replace(/embed\.html.*/, '');
+                    this.fullUrl = base + (base.endsWith('/') ? '' : '/') + '?p=' + id;
+                    try {
+                        const res = await fetch('palettes.json');
+                        const data = await res.json();
+                        this.palette = data.palettes.find(p => p.id === id) || data.palettes[0];
+                        const p = this.palette;
+                        this.colors = [p.light.bg, p.light.text, p.light.btn, p.dark.bg, p.dark.text, p.dark.btn, p.grad.from, p.grad.to];
+                    } catch (e) { console.error(e); }
+                }
+            };
+        }
+    </script>
+</body>
+</html>

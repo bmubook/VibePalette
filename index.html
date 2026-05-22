@@ -82,6 +82,10 @@
         .loading-pulse { animation: pulse 1.2s ease-in-out infinite; }
         @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
         [x-cloak] { display: none !important; }
+        .tab-active { box-shadow: 0 4px 14px rgba(0,0,0,0.12); }
+        .cb-protanopia { filter: url(#protanopia); }
+        .cb-deuteranopia { filter: url(#deuteranopia); }
+        .cb-tritanopia { filter: url(#tritanopia); }
     </style>
 </head>
 <body class="h-screen flex flex-col overflow-hidden"
@@ -135,7 +139,7 @@
             
             <!-- Search -->
             <div class="flex-shrink-0 relative mb-1">
-                <input type="text" x-model="searchQuery" 
+                <input type="text" x-ref="searchInput" x-model="searchQuery" 
                        class="search-input w-full px-4 py-2.5 rounded-xl border text-sm backdrop-blur-md outline-none transition"
                        :style="`border-color: ${currentBtn}40; color: ${currentText}; background: ${currentBtn}08`"
                        :placeholder="lang === 'ar' ? '🔍 ابحث عن لوحة...' : '🔍 Search palettes...'"
@@ -151,6 +155,17 @@
                             :class="colorFilter === f.id ? 'text-white shadow-sm' : 'opacity-55 hover:opacity-100'"
                             :style="colorFilter === f.id ? `background: ${currentBtn}; border-color: ${currentBtn}` : `border-color: ${currentBtn}33; color: ${currentText}`"
                             x-text="lang === 'ar' ? f.ar : f.en"></button>
+                </template>
+            </div>
+
+            <!-- Collection filter -->
+            <div class="flex flex-wrap gap-1.5 flex-shrink-0">
+                <template x-for="c in collections" :key="c.id">
+                    <button @click="collectionFilter = c.id"
+                            class="filter-chip px-2 py-1 rounded-lg text-[0.6rem] font-bold border"
+                            :class="collectionFilter === c.id ? 'text-white' : 'opacity-55'"
+                            :style="collectionFilter === c.id ? `background:${currentBtn};border-color:${currentBtn}` : `border-color:${currentBtn}33;color:${currentText}`"
+                            x-text="lang==='ar'?c.ar:c.en"></button>
                 </template>
             </div>
 
@@ -194,13 +209,32 @@
             </div>
             <div x-show="!loading && currentPalette" class="max-w-5xl mx-auto space-y-8">
                 <!-- Hero -->
-                <section class="text-center py-4">
+                <section class="text-center py-4 space-y-3">
                     <h2 class="hero-title text-3xl md:text-5xl font-black leading-tight">
                         <span x-text="lang === 'ar' ? 'صمم واجهاتك بـ' : 'Design your UI with'"></span> <br>
-                        <span class="text-transparent bg-clip-text" :style="`background-image: linear-gradient(to left, ${currentPalette.grad.from}, ${currentPalette.grad.to})`"
+                        <span class="text-transparent bg-clip-text" :style="`background-image: linear-gradient(to left, ${displayPalette.grad.from}, ${displayPalette.grad.to})`"
                               x-text="lang === 'ar' ? 'فايب احترافي' : 'Professional Vibe'"></span>
                     </h2>
+                    <p class="text-[0.65rem] opacity-45" x-text="lang==='ar'?'← → لوحات · D وضع ليلي · / بحث':'← → palettes · D dark · / search'"></p>
+                    <div class="flex flex-wrap justify-center gap-2">
+                        <template x-for="t in tabs" :key="t.id">
+                            <button @click="activeTab = t.id"
+                                    class="px-4 py-2 rounded-xl text-xs font-bold border transition tab-active"
+                                    :class="activeTab===t.id?'text-white':'opacity-60'"
+                                    :style="activeTab===t.id?`background:${currentBtn};border-color:${currentBtn}`:`border-color:${currentBtn}33;color:${currentText}`"
+                                    x-text="lang==='ar'?t.ar:t.en"></button>
+                        </template>
+                    </div>
+                    <div class="flex flex-wrap justify-center gap-2 text-xs opacity-70">
+                        <span x-text="lang==='ar'?`خطوط: ${getFontPairing(currentPalette).arH} + ${getFontPairing(currentPalette).arB}`:`Fonts: ${getFontPairing(currentPalette).h} + ${getFontPairing(currentPalette).b}`"></span>
+                        <button @click="toggleVote(currentPalette.id)" class="px-2 py-0.5 rounded-lg border"
+                                :style="`border-color:${currentBtn}44`">
+                            <span x-text="`⭐ ${getVoteCount(currentPalette.id)}`"></span>
+                        </button>
+                    </div>
                 </section>
+
+                <div x-show="activeTab === 'preview'" class="space-y-8">
 
                 <!-- Color swatches (click to copy HEX) -->
                 <section class="p-4 rounded-2xl border backdrop-blur-md" style="border-color: rgba(128,128,128,0.15); background: rgba(128,128,128,0.05)">
@@ -231,7 +265,7 @@
                         <!-- Buttons -->
                         <div class="p-5 rounded-3xl border shadow-sm backdrop-blur-md" style="border-color: rgba(128,128,128,0.15); background: rgba(128,128,128,0.05)">
                             <div class="flex flex-wrap gap-3">
-                                <button class="px-6 py-3 rounded-xl font-bold text-white shadow-lg" :style="`background: linear-gradient(to right, ${currentPalette.grad.from}, ${currentPalette.grad.to})`">Primary</button>
+                                <button class="px-6 py-3 rounded-xl font-bold text-white shadow-lg" :style="`background: linear-gradient(to right, ${displayPalette.grad.from}, ${displayPalette.grad.to})`">Primary</button>
                                 <button class="px-6 py-3 rounded-xl font-bold border-2" :style="`border-color: ${currentBtn}; color: ${currentBtn}`">Outline</button>
                                 <span class="px-3 py-1.5 rounded-full text-xs font-bold self-center" :style="`background: ${currentBtn}22; color: ${currentBtn}`" x-text="lang === 'ar' ? 'شارة' : 'Badge'"></span>
                             </div>
@@ -241,7 +275,7 @@
                             <input type="text" readonly class="w-full px-4 py-2.5 rounded-xl border text-sm" 
                                    :style="`border-color: ${currentBtn}44; color: ${currentText}; background: transparent`"
                                    :value="lang === 'ar' ? 'حقل إدخال تجريبي...' : 'Sample input field...'" />
-                            <div class="w-full bg-gray-500 bg-opacity-10 h-2 rounded-full overflow-hidden"><div class="h-full rounded-full transition-all" :style="`background: linear-gradient(to right, ${currentPalette.grad.from}, ${currentPalette.grad.to}); width: 65%`"></div></div>
+                            <div class="w-full bg-gray-500 bg-opacity-10 h-2 rounded-full overflow-hidden"><div class="h-full rounded-full transition-all" :style="`background: linear-gradient(to right, ${displayPalette.grad.from}, ${displayPalette.grad.to}); width: 65%`"></div></div>
                         </div>
                         <!-- Mini Navbar -->
                         <div class="p-3 rounded-2xl border backdrop-blur-md flex items-center justify-between" style="border-color: rgba(128,128,128,0.15); background: rgba(128,128,128,0.05)">
@@ -253,7 +287,7 @@
                     </div>
                     <!-- Card Preview -->
                     <div class="p-6 rounded-[2rem] border-2 flex flex-col justify-between backdrop-blur-sm" :style="`border-color: ${currentPalette.grad.from}44; background: ${currentPalette.grad.from}05`">
-                        <div class="h-32 rounded-2xl shadow-2xl mb-3" :style="`background: linear-gradient(135deg, ${currentPalette.grad.from}, ${currentPalette.grad.to})`"></div>
+                        <div class="h-32 rounded-2xl shadow-2xl mb-3" :style="`background: linear-gradient(135deg, ${displayPalette.grad.from}, ${displayPalette.grad.to})`"></div>
                         <h4 class="text-lg font-black" x-text="lang === 'ar' ? currentPalette.nameAr : currentPalette.nameEn"></h4>
                         <p class="text-xs opacity-60 mt-1" x-text="lang === 'ar' ? 'معاينة حية للألوان على عناصر واقعية' : 'Live preview of colors on real UI elements'"></p>
                         <!-- WCAG Detail -->
@@ -348,63 +382,124 @@
                     </div>
                 </section>
 
-                <!-- Export Section -->
-                <section class="p-6 border-t space-y-6" style="border-color: rgba(128, 128, 128, 0.1);">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
-                        <!-- AI Prompt -->
-                        <button @click="copyExport('prompt')" 
-                                class="p-6 rounded-[1.5rem] border-2 transition-all hover:-translate-y-1 flex flex-col items-center text-center gap-2 shadow-lg"
-                                :class="activeExport === 'prompt' ? 'text-white' : ''"
-                                :style="activeExport === 'prompt' ? `background: linear-gradient(135deg, ${currentPalette.grad.from}, ${currentPalette.grad.to}); border-color: transparent` : `border-color: ${currentBtn}; color: ${currentBtn}`">
-                            <span class="text-2xl">🤖</span>
-                            <span class="font-black text-sm" x-text="activeExport === 'prompt' ? '✓ Copied!' : (lang === 'ar' ? 'AI Prompt' : 'AI Prompt')"></span>
-                            <p class="text-[0.65rem] opacity-70" x-text="lang === 'ar' ? 'برومبت هندسي كامل للذكاء الاصطناعي' : 'Full architectural AI prompt'"></p>
-                        </button>
-                        <!-- CSS Variables -->
-                        <button @click="copyExport('css')"
-                                class="p-6 rounded-[1.5rem] border-2 transition-all hover:-translate-y-1 flex flex-col items-center text-center gap-2 shadow-lg"
-                                :class="activeExport === 'css' ? 'text-white' : ''"
-                                :style="activeExport === 'css' ? `background: linear-gradient(135deg, ${currentPalette.grad.from}, ${currentPalette.grad.to}); border-color: transparent` : `border-color: ${currentBtn}44; color: ${currentBtn}`">
-                            <span class="text-2xl">🎨</span>
-                            <span class="font-black text-sm" x-text="activeExport === 'css' ? '✓ Copied!' : 'CSS Variables'"></span>
-                            <p class="text-[0.65rem] opacity-70">:root { --bg: ... }</p>
-                        </button>
-                        <!-- Tailwind -->
-                        <button @click="copyExport('tailwind')"
-                                class="p-6 rounded-[1.5rem] border-2 transition-all hover:-translate-y-1 flex flex-col items-center text-center gap-2 shadow-lg"
-                                :class="activeExport === 'tailwind' ? 'text-white' : ''"
-                                :style="activeExport === 'tailwind' ? `background: linear-gradient(135deg, ${currentPalette.grad.from}, ${currentPalette.grad.to}); border-color: transparent` : `border-color: ${currentBtn}44; color: ${currentBtn}`">
-                            <span class="text-2xl">💨</span>
-                            <span class="font-black text-sm" x-text="activeExport === 'tailwind' ? '✓ Copied!' : 'Tailwind'"></span>
-                            <p class="text-[0.65rem] opacity-70">tailwind.config.js</p>
-                        </button>
-                        <!-- SCSS -->
-                        <button @click="copyExport('scss')"
-                                class="p-6 rounded-[1.5rem] border-2 transition-all hover:-translate-y-1 flex flex-col items-center text-center gap-2 shadow-lg"
-                                :class="activeExport === 'scss' ? 'text-white' : ''"
-                                :style="activeExport === 'scss' ? `background: linear-gradient(135deg, ${currentPalette.grad.from}, ${currentPalette.grad.to}); border-color: transparent` : `border-color: ${currentBtn}44; color: ${currentBtn}`">
-                            <span class="text-2xl">💎</span>
-                            <span class="font-black text-sm" x-text="activeExport === 'scss' ? '✓ Copied!' : 'SCSS'"></span>
-                            <p class="text-[0.65rem] opacity-70">$variables</p>
-                        </button>
-                        <!-- JSON Tokens -->
-                        <button @click="copyExport('json')"
-                                class="p-6 rounded-[1.5rem] border-2 transition-all hover:-translate-y-1 flex flex-col items-center text-center gap-2 shadow-lg"
-                                :class="activeExport === 'json' ? 'text-white' : ''"
-                                :style="activeExport === 'json' ? `background: linear-gradient(135deg, ${currentPalette.grad.from}, ${currentPalette.grad.to}); border-color: transparent` : `border-color: ${currentBtn}44; color: ${currentBtn}`">
-                            <span class="text-2xl">📦</span>
-                            <span class="font-black text-sm" x-text="activeExport === 'json' ? '✓ Copied!' : 'JSON Tokens'"></span>
-                            <p class="text-[0.65rem] opacity-70">W3C Design Tokens</p>
-                        </button>
-                        <!-- Colors Only -->
-                        <button @click="copyExport('colors')"
-                                class="p-6 rounded-[1.5rem] border-2 transition-all hover:-translate-y-1 flex flex-col items-center text-center gap-2 shadow-lg"
-                                :class="activeExport === 'colors' ? 'text-white' : ''"
-                                :style="activeExport === 'colors' ? `background: linear-gradient(135deg, ${currentPalette.grad.from}, ${currentPalette.grad.to}); border-color: transparent` : `border-color: ${currentBtn}44; color: ${currentBtn}`">
-                            <span class="text-2xl">🎯</span>
-                            <span class="font-black text-sm" x-text="activeExport === 'colors' ? '✓ Copied!' : (lang === 'ar' ? 'الألوان فقط' : 'Colors Only')"></span>
-                            <p class="text-[0.65rem] opacity-70">HEX codes</p>
-                        </button>
+                <!-- Before / After -->
+                <section class="p-4 rounded-2xl border space-y-3" style="border-color:rgba(128,128,128,0.15)">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold" x-text="lang==='ar'?'⟷ قبل / بعد':'⟷ Before / After'"></span>
+                        <button @click="beforeAfter=!beforeAfter" class="text-xs font-bold px-3 py-1 rounded-lg border"
+                                :style="`border-color:${currentBtn}44;color:${currentBtn}`" x-text="beforeAfter?(lang==='ar'?'إخفاء':'Hide'):(lang==='ar'?'عرض':'Show')"></button>
+                    </div>
+                    <div x-show="beforeAfter" class="grid grid-cols-2 gap-3">
+                        <div class="p-4 rounded-xl border bg-gray-100 text-gray-600">
+                            <div class="text-xs font-bold mb-2" x-text="lang==='ar'?'قبل (رمادي)':'Before (plain)'"></div>
+                            <div class="h-8 bg-gray-300 rounded mb-2"></div>
+                            <div class="text-sm">Generic UI</div>
+                        </div>
+                        <div class="p-4 rounded-xl border" :style="`background:${currentBg};color:${currentText};border-color:${displayPalette.grad.from}44`">
+                            <div class="text-xs font-bold mb-2" x-text="lang==='ar'?'بعد (Vibe)':'After (Vibe)'"></div>
+                            <div class="h-8 rounded mb-2" :style="`background:linear-gradient(90deg,${displayPalette.grad.from},${displayPalette.grad.to})`"></div>
+                            <div class="text-sm font-bold" x-text="lang==='ar'?currentPalette.nameAr:currentPalette.nameEn"></div>
+                        </div>
+                    </div>
+                </section>
+                </div><!-- /preview tab -->
+
+                <!-- STUDIO TAB -->
+                <div x-show="activeTab==='studio'" class="space-y-6">
+                    <section class="p-5 rounded-2xl border space-y-3" style="border-color:rgba(128,128,128,0.15)">
+                        <h3 class="font-black text-sm" x-text="lang==='ar'?'🎨 مولّد من لون واحد':'🎨 Generate from one color'"></h3>
+                        <div class="flex gap-2">
+                            <input type="color" x-model="generatorColor" class="w-12 h-10 rounded cursor-pointer border-0">
+                            <input type="text" x-model="generatorColor" class="flex-1 px-3 py-2 rounded-xl border text-sm font-mono" :style="`border-color:${currentBtn}44`">
+                            <button @click="generateFromColor()" class="px-4 py-2 rounded-xl text-sm font-bold text-white" :style="`background:${currentBtn}`" x-text="lang==='ar'?'ولّد':'Generate'"></button>
+                        </div>
+                    </section>
+                    <section class="p-5 rounded-2xl border space-y-3" style="border-color:rgba(128,128,128,0.15)">
+                        <h3 class="font-black text-sm" x-text="lang==='ar'?'🖼 استخراج من صورة':'🖼 Extract from image'"></h3>
+                        <input type="file" accept="image/*" @change="extractFromImage($event)" class="text-xs w-full">
+                    </section>
+                    <section class="p-5 rounded-2xl border space-y-3" style="border-color:rgba(128,128,128,0.15)">
+                        <h3 class="font-black text-sm" x-text="lang==='ar'?'♿ إصلاح تباين WCAG':'♿ Auto-fix WCAG contrast'"></h3>
+                        <button @click="autoFixContrast()" class="px-4 py-2 rounded-xl text-sm font-bold border" :style="`border-color:${currentBtn};color:${currentBtn}`" x-text="lang==='ar'?'إصلاح تلقائي':'Fix automatically'"></button>
+                    </section>
+                    <section class="p-5 rounded-2xl border space-y-3" style="border-color:rgba(128,128,128,0.15)">
+                        <h3 class="font-black text-sm" x-text="lang==='ar'?'👁 محاكاة عمى الألوان':'👁 Color blindness sim'"></h3>
+                        <div class="flex flex-wrap gap-2">
+                            <template x-for="m in [{id:'none',ar:'عادي',en:'Normal'},{id:'protanopia',ar:'بروتان',en:'Protan'},{id:'deuteranopia',ar:'دوتير',en:'Deutan'},{id:'tritanopia',ar:'تريتان',en:'Tritan'}]" :key="m.id">
+                                <button @click="colorBlindMode=m.id" class="px-3 py-1 rounded-lg text-xs font-bold border"
+                                        :class="colorBlindMode===m.id?'text-white':''"
+                                        :style="colorBlindMode===m.id?`background:${currentBtn};border-color:${currentBtn}`:`border-color:${currentBtn}33`"
+                                        x-text="lang==='ar'?m.ar:m.en"></button>
+                            </template>
+                        </div>
+                    </section>
+                    <section class="p-5 rounded-2xl border space-y-3" style="border-color:rgba(128,128,128,0.15)">
+                        <h3 class="font-black text-sm" x-text="lang==='ar'?'⚖ مقارنة لوحتين':'⚖ Compare two palettes'"></h3>
+                        <select x-model.number="comparePaletteId" class="w-full px-3 py-2 rounded-xl border text-sm" :style="`border-color:${currentBtn}44;color:${currentText}`">
+                            <template x-for="p in palettes" :key="'cmp-'+p.id">
+                                <option :value="p.id" x-text="lang==='ar'?p.nameAr:p.nameEn"></option>
+                            </template>
+                        </select>
+                        <div class="grid grid-cols-2 gap-3" x-show="displayCompare">
+                            <div class="p-3 rounded-xl text-center text-xs font-bold" :style="`background:linear-gradient(135deg,${displayPalette.grad.from},${displayPalette.grad.to});color:#fff`" x-text="lang==='ar'?currentPalette.nameAr:currentPalette.nameEn"></div>
+                            <div class="p-3 rounded-xl text-center text-xs font-bold" :style="`background:linear-gradient(135deg,${displayCompare.grad.from},${displayCompare.grad.to});color:#fff`" x-text="lang==='ar'?comparePalette.nameAr:comparePalette.nameEn"></div>
+                        </div>
+                    </section>
+                    <section class="p-5 rounded-2xl border space-y-3" style="border-color:rgba(128,128,128,0.15)">
+                        <h3 class="font-black text-sm" x-text="lang==='ar'?'✨ Vibe Match — أي لوحة تناسبك؟':'✨ Vibe Match — find your palette'"></h3>
+                        <template x-if="vibeStep < vibeQuestions.length">
+                            <div class="space-y-2">
+                                <p class="text-sm font-bold" x-text="lang==='ar'?vibeQuestions[vibeStep].ar:vibeQuestions[vibeStep].en"></p>
+                                <template x-for="(opt,oi) in vibeQuestions[vibeStep].options" :key="oi">
+                                    <button @click="vibePick(opt)" class="w-full text-start px-4 py-2 rounded-xl border text-sm"
+                                            :style="`border-color:${currentBtn}33`" x-text="lang==='ar'?opt.ar:opt.en"></button>
+                                </template>
+                            </div>
+                        </template>
+                        <button @click="resetVibeQuiz()" class="text-xs opacity-50 underline" x-text="lang==='ar'?'إعادة':'Reset'"></button>
+                    </section>
+                    <section class="p-5 rounded-2xl border space-y-3" style="border-color:rgba(128,128,128,0.15)">
+                        <h3 class="font-black text-sm" x-text="lang==='ar'?'📸 صورة مشاركة (OG)':'📸 Share image (OG)'"></h3>
+                        <button @click="downloadShareImage()" class="px-4 py-2 rounded-xl text-sm font-bold text-white" :style="`background:linear-gradient(90deg,${displayPalette.grad.from},${displayPalette.grad.to})`" x-text="lang==='ar'?'تنزيل PNG':'Download PNG'"></button>
+                    </section>
+                </div>
+
+                <!-- COMMUNITY TAB -->
+                <div x-show="activeTab==='community'" class="space-y-6">
+                    <section class="p-5 rounded-2xl border space-y-3" style="border-color:rgba(128,128,128,0.15)">
+                        <h3 class="font-black" x-text="lang==='ar'?'⭐ الأكثر تصويتاً':'⭐ Top voted'"></h3>
+                        <template x-for="p in topCommunityPalettes" :key="'top-'+p.id">
+                            <button @click="selectPalette(p)" class="w-full flex justify-between items-center p-3 rounded-xl border text-sm"
+                                    :style="`border-color:${currentBtn}22`">
+                                <span x-text="lang==='ar'?p.nameAr:p.nameEn"></span>
+                                <span x-text="`⭐ ${getVoteCount(p.id)}`"></span>
+                            </button>
+                        </template>
+                    </section>
+                    <section class="p-5 rounded-2xl border space-y-3" style="border-color:rgba(128,128,128,0.15)">
+                        <h3 class="font-black text-sm" x-text="lang==='ar'?'🤝 ساهم بلوحة':'🤝 Contribute a palette'"></h3>
+                        <p class="text-xs opacity-60" x-text="lang==='ar'?'أضف لوحتك في palettes.json على GitHub وأرسل Pull Request.':'Add your palette to palettes.json on GitHub and open a Pull Request.'"></p>
+                        <a href="https://github.com/bmubook/VibePalette/blob/main/palettes.json" target="_blank" class="inline-block text-xs font-bold underline" :style="`color:${currentBtn}`">palettes.json →</a>
+                    </section>
+                    <section class="p-5 rounded-2xl border space-y-3" style="border-color:rgba(128,128,128,0.15)">
+                        <h3 class="font-black text-sm" x-text="lang==='ar'?'📎 Embed':'📎 Embed'"></h3>
+                        <textarea readonly :value="embedCode" rows="3" class="w-full text-[0.6rem] font-mono p-2 rounded-xl border" :style="`border-color:${currentBtn}33`"></textarea>
+                        <button @click="copyEmbed()" class="px-4 py-2 rounded-xl text-sm font-bold border" :style="`border-color:${currentBtn};color:${currentBtn}`" x-text="lang==='ar'?'نسخ الكود':'Copy code'"></button>
+                    </section>
+                </div>
+
+                <!-- EXPORT TAB -->
+                <section x-show="activeTab==='export'" class="p-6 border-t space-y-6" style="border-color:rgba(128,128,128,0.1)">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 max-w-5xl mx-auto">
+                        <template x-for="ex in exportTypes" :key="ex.id">
+                            <button @click="copyExport(ex.id)"
+                                    class="p-4 rounded-2xl border-2 transition-all hover:-translate-y-0.5 flex flex-col items-center text-center gap-1"
+                                    :class="activeExport===ex.id?'text-white':''"
+                                    :style="activeExport===ex.id?`background:linear-gradient(135deg,${displayPalette.grad.from},${displayPalette.grad.to});border-color:transparent`:`border-color:${currentBtn}44;color:${currentBtn}`">
+                                <span class="text-xl" x-text="ex.icon"></span>
+                                <span class="font-black text-[0.65rem]" x-text="activeExport===ex.id?'✓':(lang==='ar'?ex.ar:ex.en)"></span>
+                            </button>
+                        </template>
                     </div>
                 </section>
 
@@ -438,6 +533,7 @@
         </div>
     </div>
 
+    <script src="color-utils.js"></script>
     <script src="app.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </body>

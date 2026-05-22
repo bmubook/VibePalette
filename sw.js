@@ -1,5 +1,5 @@
-const CACHE_NAME = 'vibepalette-v3';
-const ASSETS = ['index.html', 'app.js', 'palettes.json', 'manifest.json', 'icon.svg'];
+const CACHE_NAME = 'vibepalette-v4';
+const ASSETS = ['index.html', 'embed.html', 'app.js', 'color-utils.js', 'palettes.json', 'manifest.json', 'icon.svg'];
 
 self.addEventListener('install', (event) => {
     event.waitUntil(
