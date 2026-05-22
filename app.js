@@ -26,9 +26,9 @@ function themePreview() {
         beforeAfter: false,
         vibeStep: 0,
         vibeScores: {},
-        favorites: JSON.parse(localStorage.getItem('vp_favs') || '[]'),
-        votes: JSON.parse(localStorage.getItem('vp_votes') || '{}'),
-        votedIds: JSON.parse(localStorage.getItem('vp_voted') || '[]'),
+        favorites: safeJson('vp_favs', []),
+        votes: safeJson('vp_votes', {}),
+        votedIds: safeJson('vp_voted', []),
         colorFamilies: [
             { id: 'all', ar: 'الكل', en: 'All' },
             { id: 'warm', ar: 'دافئة', en: 'Warm' },
@@ -459,7 +459,8 @@ function themePreview() {
         },
 
         get displayPalette() {
-            return this.getSimPalette(this.currentPalette);
+            const p = this.currentPalette || FALLBACK_PALETTE;
+            return this.getSimPalette(p) || p;
         },
 
         get comparePalette() {
@@ -677,7 +678,7 @@ function themePreview() {
                 auth:
                     this.lang === 'ar'
                         ? 'المشهد: Auth — تسجيل دخول/إنشاء حساب بتصميم أنيق.'
-                        : 'Scene: Auth — sign-in/sign-up screens.'
+                        : 'Scene: Auth — sign-in/sign-up screens.',
                 default:
                     this.lang === 'ar'
                         ? 'طبّق على تطبيق ويب كامل Light/Dark.'
@@ -748,6 +749,15 @@ function themePreview() {
             setTimeout(() => (this.toastVisible = false), 2000);
         }
     };
+}
+
+function safeJson(key, fallback) {
+    try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+    } catch (e) {
+        return fallback;
+    }
 }
 
 const FALLBACK_PALETTE = {

@@ -183,8 +183,8 @@
                     <div class="flex-shrink-0 relative">
                         <button @click="selectPalette(p)"
                                 class="w-32 md:w-full p-3 md:p-3.5 rounded-2xl border transition-all duration-300 relative overflow-hidden text-start shadow-sm"
-                                :class="currentPalette.id === p.id ? 'shadow-xl scale-[1.02] border-transparent' : 'border-gray-500 border-opacity-20 opacity-60 hover:opacity-100'"
-                                :style="currentPalette.id === p.id ? `background: ${p.grad.from}20; border-color: ${p.grad.from}` : ''">
+                                :class="currentPalette && currentPalette.id === p.id ? 'shadow-xl scale-[1.02] border-transparent' : 'border-gray-500 border-opacity-20 opacity-60 hover:opacity-100'"
+                                :style="currentPalette && currentPalette.id === p.id ? `background: ${p.grad.from}20; border-color: ${p.grad.from}` : ''">
                             <div class="flex justify-between items-start">
                                 <div class="text-xs md:text-sm font-bold truncate flex-1" x-text="lang === 'ar' ? p.nameAr : p.nameEn"></div>
                                 <button @click.stop="toggleFav(p.id)" class="fav-btn text-xs ml-1" :class="isFav(p.id) ? 'active' : ''" x-text="isFav(p.id) ? '❤️' : '🤍'"></button>
@@ -447,15 +447,13 @@
                     </section>
                     <section class="p-5 rounded-2xl border space-y-3" style="border-color:rgba(128,128,128,0.15)">
                         <h3 class="font-black text-sm" x-text="lang==='ar'?'✨ Vibe Match — أي لوحة تناسبك؟':'✨ Vibe Match — find your palette'"></h3>
-                        <template x-if="vibeStep < vibeQuestions.length">
-                            <div class="space-y-2">
+                        <div x-show="vibeStep < vibeQuestions.length" class="space-y-2">
                                 <p class="text-sm font-bold" x-text="lang==='ar'?vibeQuestions[vibeStep].ar:vibeQuestions[vibeStep].en"></p>
                                 <template x-for="(opt,oi) in vibeQuestions[vibeStep].options" :key="oi">
                                     <button @click="vibePick(opt)" class="w-full text-start px-4 py-2 rounded-xl border text-sm"
                                             :style="`border-color:${currentBtn}33`" x-text="lang==='ar'?opt.ar:opt.en"></button>
                                 </template>
-                            </div>
-                        </template>
+                        </div>
                         <button @click="resetVibeQuiz()" class="text-xs opacity-50 underline" x-text="lang==='ar'?'إعادة':'Reset'"></button>
                     </section>
                     <section class="p-5 rounded-2xl border space-y-3" style="border-color:rgba(128,128,128,0.15)">
