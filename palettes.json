@@ -1,0 +1,860 @@
+{
+  "version": 1,
+  "palettes": [
+    {
+      "id": 1,
+      "nameAr": "شروق الشمس",
+      "nameEn": "Warm Sunrise",
+      "light": {
+        "bg": "#FFF7ED",
+        "text": "#431407",
+        "btn": "#EA580C"
+      },
+      "dark": {
+        "bg": "#0D0804",
+        "text": "#FFEDD5",
+        "btn": "#F97316"
+      },
+      "grad": {
+        "from": "#EA580C",
+        "to": "#FBA918"
+      }
+    },
+    {
+      "id": 2,
+      "nameAr": "غابة الزمرد",
+      "nameEn": "Emerald Forest",
+      "light": {
+        "bg": "#F0FDF4",
+        "text": "#064E3B",
+        "btn": "#10B981"
+      },
+      "dark": {
+        "bg": "#020D0A",
+        "text": "#D1FAE5",
+        "btn": "#34D399"
+      },
+      "grad": {
+        "from": "#059669",
+        "to": "#34D399"
+      }
+    },
+    {
+      "id": 3,
+      "nameAr": "المحيط العميق",
+      "nameEn": "Deep Ocean",
+      "light": {
+        "bg": "#ECFEFF",
+        "text": "#164E63",
+        "btn": "#06B6D4"
+      },
+      "dark": {
+        "bg": "#02090D",
+        "text": "#CFFAFE",
+        "btn": "#22D3EE"
+      },
+      "grad": {
+        "from": "#0891B2",
+        "to": "#22D3EE"
+      }
+    },
+    {
+      "id": 4,
+      "nameAr": "التوت البري",
+      "nameEn": "Wild Berry",
+      "light": {
+        "bg": "#FDF2F8",
+        "text": "#831843",
+        "btn": "#DB2777"
+      },
+      "dark": {
+        "bg": "#100208",
+        "text": "#FCE7F3",
+        "btn": "#F43F5E"
+      },
+      "grad": {
+        "from": "#BE185D",
+        "to": "#F472B6"
+      }
+    },
+    {
+      "id": 5,
+      "nameAr": "فخامة ملكية",
+      "nameEn": "Royal Luxury",
+      "light": {
+        "bg": "#F8FAFC",
+        "text": "#0F172A",
+        "btn": "#D97706"
+      },
+      "dark": {
+        "bg": "#020408",
+        "text": "#F8FAFC",
+        "btn": "#F59E0B"
+      },
+      "grad": {
+        "from": "#B45309",
+        "to": "#FBBF24"
+      }
+    },
+    {
+      "id": 6,
+      "nameAr": "السايبر بانك",
+      "nameEn": "Cyberpunk",
+      "light": {
+        "bg": "#F4F4F5",
+        "text": "#18181B",
+        "btn": "#65A30D"
+      },
+      "dark": {
+        "bg": "#09090B",
+        "text": "#FAFAFA",
+        "btn": "#A3E635"
+      },
+      "grad": {
+        "from": "#4D7C0F",
+        "to": "#BEF264"
+      }
+    },
+    {
+      "id": 7,
+      "nameAr": "رمال الصحراء",
+      "nameEn": "Desert Sands",
+      "light": {
+        "bg": "#FAF4ED",
+        "text": "#5C2D16",
+        "btn": "#D97757"
+      },
+      "dark": {
+        "bg": "#1A0D06",
+        "text": "#F3E8DC",
+        "btn": "#E28C6E"
+      },
+      "grad": {
+        "from": "#C05C3A",
+        "to": "#EAB096"
+      }
+    },
+    {
+      "id": 8,
+      "nameAr": "سماء الغسق",
+      "nameEn": "Dusk Sky",
+      "light": {
+        "bg": "#EEF2FF",
+        "text": "#312E81",
+        "btn": "#F43F5E"
+      },
+      "dark": {
+        "bg": "#05051A",
+        "text": "#E0E7FF",
+        "btn": "#FB7185"
+      },
+      "grad": {
+        "from": "#4F46E5",
+        "to": "#F43F5E"
+      }
+    },
+    {
+      "id": 9,
+      "nameAr": "أحمر قرمزي",
+      "nameEn": "Crimson Red",
+      "light": {
+        "bg": "#FEF2F2",
+        "text": "#7F1D1D",
+        "btn": "#DC2626"
+      },
+      "dark": {
+        "bg": "#1A0404",
+        "text": "#FEE2E2",
+        "btn": "#EF4444"
+      },
+      "grad": {
+        "from": "#B91C1C",
+        "to": "#F87171"
+      }
+    },
+    {
+      "id": 10,
+      "nameAr": "أزرق ياقوتي",
+      "nameEn": "Sapphire Blue",
+      "light": {
+        "bg": "#F1F5F9",
+        "text": "#334155",
+        "btn": "#2563EB"
+      },
+      "dark": {
+        "bg": "#050810",
+        "text": "#CBD5E1",
+        "btn": "#3B82F6"
+      },
+      "grad": {
+        "from": "#1D4ED8",
+        "to": "#60A5FA"
+      }
+    },
+    {
+      "id": 11,
+      "nameAr": "حصاد الخريف",
+      "nameEn": "Autumn Harvest",
+      "light": {
+        "bg": "#FEFCE8",
+        "text": "#713F12",
+        "btn": "#CA8A04"
+      },
+      "dark": {
+        "bg": "#1A0F02",
+        "text": "#FEF08A",
+        "btn": "#EAB308"
+      },
+      "grad": {
+        "from": "#A16207",
+        "to": "#FDE047"
+      }
+    },
+    {
+      "id": 12,
+      "nameAr": "لافندر هادئ",
+      "nameEn": "Calm Lavender",
+      "light": {
+        "bg": "#FAF5FF",
+        "text": "#581C87",
+        "btn": "#9333EA"
+      },
+      "dark": {
+        "bg": "#0F021A",
+        "text": "#E9D5FF",
+        "btn": "#A855F7"
+      },
+      "grad": {
+        "from": "#7E22CE",
+        "to": "#C084FC"
+      }
+    },
+    {
+      "id": 13,
+      "nameAr": "حمضيات استوائية",
+      "nameEn": "Tropical Citrus",
+      "light": {
+        "bg": "#F0FDFA",
+        "text": "#115E59",
+        "btn": "#EAB308"
+      },
+      "dark": {
+        "bg": "#021A1A",
+        "text": "#CCFBF1",
+        "btn": "#FDE047"
+      },
+      "grad": {
+        "from": "#0F766E",
+        "to": "#FACC15"
+      }
+    },
+    {
+      "id": 14,
+      "nameAr": "قهوة وكريمة",
+      "nameEn": "Coffee & Cream",
+      "light": {
+        "bg": "#FDF8F6",
+        "text": "#4A3022",
+        "btn": "#8B5E3C"
+      },
+      "dark": {
+        "bg": "#1A120D",
+        "text": "#EADACF",
+        "btn": "#B68D6A"
+      },
+      "grad": {
+        "from": "#63402C",
+        "to": "#D4B89F"
+      }
+    },
+    {
+      "id": 15,
+      "nameAr": "لؤلؤ أحادي",
+      "nameEn": "Monochrome Pearl",
+      "light": {
+        "bg": "#FFFFFF",
+        "text": "#171717",
+        "btn": "#404040"
+      },
+      "dark": {
+        "bg": "#0A0A0A",
+        "text": "#F5F5F5",
+        "btn": "#A3A3A3"
+      },
+      "grad": {
+        "from": "#262626",
+        "to": "#D4D4D4"
+      }
+    },
+    {
+      "id": 16,
+      "nameAr": "شاي الماتشا",
+      "nameEn": "Matcha Tea",
+      "light": {
+        "bg": "#F4FBEB",
+        "text": "#2F4F2F",
+        "btn": "#86A760"
+      },
+      "dark": {
+        "bg": "#0D1A0D",
+        "text": "#E8F0E8",
+        "btn": "#A3C67A"
+      },
+      "grad": {
+        "from": "#86A760",
+        "to": "#C5E1A5"
+      }
+    },
+    {
+      "id": 17,
+      "nameAr": "نيون منتصف الليل",
+      "nameEn": "Midnight Neon",
+      "light": {
+        "bg": "#F3E8FF",
+        "text": "#3B0764",
+        "btn": "#D946EF"
+      },
+      "dark": {
+        "bg": "#0A0010",
+        "text": "#FDF4FF",
+        "btn": "#E879F9"
+      },
+      "grad": {
+        "from": "#C026D3",
+        "to": "#E879F9"
+      }
+    },
+    {
+      "id": 18,
+      "nameAr": "جليد القطب",
+      "nameEn": "Polar Ice",
+      "light": {
+        "bg": "#F0F9FF",
+        "text": "#0C4A6E",
+        "btn": "#38BDF8"
+      },
+      "dark": {
+        "bg": "#021A2B",
+        "text": "#E0F2FE",
+        "btn": "#7DD3FC"
+      },
+      "grad": {
+        "from": "#0284C7",
+        "to": "#7DD3FC"
+      }
+    },
+    {
+      "id": 19,
+      "nameAr": "خوخ مخملي",
+      "nameEn": "Velvet Peach",
+      "light": {
+        "bg": "#FFF6F5",
+        "text": "#5C2723",
+        "btn": "#F87171"
+      },
+      "dark": {
+        "bg": "#1A0B0A",
+        "text": "#FEE2E2",
+        "btn": "#FCA5A5"
+      },
+      "grad": {
+        "from": "#EF4444",
+        "to": "#FCA5A5"
+      }
+    },
+    {
+      "id": 20,
+      "nameAr": "موجة كلاسيكية",
+      "nameEn": "Classic Wave",
+      "light": {
+        "bg": "#F5F3FF",
+        "text": "#2E1065",
+        "btn": "#8B5CF6"
+      },
+      "dark": {
+        "bg": "#0D051A",
+        "text": "#EDE9FE",
+        "btn": "#A78BFA"
+      },
+      "grad": {
+        "from": "#7C3AED",
+        "to": "#C4B5FD"
+      }
+    },
+    {
+      "id": 21,
+      "nameAr": "طحالب وخشب",
+      "nameEn": "Moss & Wood",
+      "light": {
+        "bg": "#FAFAF9",
+        "text": "#44403C",
+        "btn": "#65A30D"
+      },
+      "dark": {
+        "bg": "#100E0D",
+        "text": "#F5F5F4",
+        "btn": "#84CC16"
+      },
+      "grad": {
+        "from": "#4D7C0F",
+        "to": "#A3E635"
+      }
+    },
+    {
+      "id": 22,
+      "nameAr": "غزل البنات",
+      "nameEn": "Cotton Candy",
+      "light": {
+        "bg": "#FDF2F8",
+        "text": "#831843",
+        "btn": "#F472B6"
+      },
+      "dark": {
+        "bg": "#1A050D",
+        "text": "#FCE7F3",
+        "btn": "#F9A8D4"
+      },
+      "grad": {
+        "from": "#EC4899",
+        "to": "#FBCFE8"
+      }
+    },
+    {
+      "id": 23,
+      "nameAr": "الساعة الذهبية",
+      "nameEn": "Golden Hour",
+      "light": {
+        "bg": "#FFFBEB",
+        "text": "#78350F",
+        "btn": "#D97706"
+      },
+      "dark": {
+        "bg": "#1A0C02",
+        "text": "#FEF3C7",
+        "btn": "#F59E0B"
+      },
+      "grad": {
+        "from": "#B45309",
+        "to": "#FCD34D"
+      }
+    },
+    {
+      "id": 24,
+      "nameAr": "فضاء سحيق",
+      "nameEn": "Deep Space",
+      "light": {
+        "bg": "#F8FAFC",
+        "text": "#0F172A",
+        "btn": "#475569"
+      },
+      "dark": {
+        "bg": "#01040D",
+        "text": "#F8FAFC",
+        "btn": "#94A3B8"
+      },
+      "grad": {
+        "from": "#334155",
+        "to": "#CBD5E1"
+      }
+    },
+    {
+      "id": 25,
+      "nameAr": "نعناع وشوكولاتة",
+      "nameEn": "Mint & Choco",
+      "light": {
+        "bg": "#ECFDF5",
+        "text": "#064E3B",
+        "btn": "#10B981"
+      },
+      "dark": {
+        "bg": "#021A14",
+        "text": "#D1FAE5",
+        "btn": "#34D399"
+      },
+      "grad": {
+        "from": "#059669",
+        "to": "#6EE7B7"
+      }
+    },
+    {
+      "id": 26,
+      "nameAr": "زهرة الأوركيد",
+      "nameEn": "Orchid Flower",
+      "light": {
+        "bg": "#FAF5FF",
+        "text": "#581C87",
+        "btn": "#D946EF"
+      },
+      "dark": {
+        "bg": "#1A021A",
+        "text": "#F3E8FF",
+        "btn": "#E879F9"
+      },
+      "grad": {
+        "from": "#A21CAF",
+        "to": "#F0ABFC"
+      }
+    },
+    {
+      "id": 27,
+      "nameAr": "صدأ وتيل",
+      "nameEn": "Rust & Teal",
+      "light": {
+        "bg": "#F0FDFA",
+        "text": "#134E4A",
+        "btn": "#0D9488"
+      },
+      "dark": {
+        "bg": "#021A1A",
+        "text": "#CCFBF1",
+        "btn": "#14B8A6"
+      },
+      "grad": {
+        "from": "#0F766E",
+        "to": "#5EEAD4"
+      }
+    },
+    {
+      "id": 28,
+      "nameAr": "صخر وورد",
+      "nameEn": "Rock & Rose",
+      "light": {
+        "bg": "#F1F5F9",
+        "text": "#334155",
+        "btn": "#F43F5E"
+      },
+      "dark": {
+        "bg": "#05081A",
+        "text": "#E2E8F0",
+        "btn": "#FB7185"
+      },
+      "grad": {
+        "from": "#E11D48",
+        "to": "#FDA4AF"
+      }
+    },
+    {
+      "id": 29,
+      "nameAr": "ليموناضة",
+      "nameEn": "Lemonade",
+      "light": {
+        "bg": "#FEFCE8",
+        "text": "#713F12",
+        "btn": "#EAB308"
+      },
+      "dark": {
+        "bg": "#1A1A02",
+        "text": "#FEF08A",
+        "btn": "#FACC15"
+      },
+      "grad": {
+        "from": "#CA8A04",
+        "to": "#FDE047"
+      }
+    },
+    {
+      "id": 30,
+      "nameAr": "شفق قطبي",
+      "nameEn": "Aurora",
+      "light": {
+        "bg": "#F0FDF4",
+        "text": "#064E3B",
+        "btn": "#22C55E"
+      },
+      "dark": {
+        "bg": "#021A10",
+        "text": "#DCFCE7",
+        "btn": "#4ADE80"
+      },
+      "grad": {
+        "from": "#16A34A",
+        "to": "#86EFAC"
+      }
+    },
+    {
+      "id": 31,
+      "nameAr": "فخار وتيراكوتا",
+      "nameEn": "Clay & Terracotta",
+      "light": {
+        "bg": "#FFF7ED",
+        "text": "#7C2D12",
+        "btn": "#EA580C"
+      },
+      "dark": {
+        "bg": "#1A0A04",
+        "text": "#FFEDD5",
+        "btn": "#F97316"
+      },
+      "grad": {
+        "from": "#C2410C",
+        "to": "#FDBA74"
+      }
+    },
+    {
+      "id": 32,
+      "nameAr": "إنديجو كهربائي",
+      "nameEn": "Electric Indigo",
+      "light": {
+        "bg": "#EEF2FF",
+        "text": "#312E81",
+        "btn": "#4F46E5"
+      },
+      "dark": {
+        "bg": "#0D0D1A",
+        "text": "#E0E7FF",
+        "btn": "#6366F1"
+      },
+      "grad": {
+        "from": "#4338CA",
+        "to": "#A5B4FC"
+      }
+    },
+    {
+      "id": 33,
+      "nameAr": "ساكورا",
+      "nameEn": "Sakura Blossom",
+      "light": {
+        "bg": "#FFF5F7",
+        "text": "#6B1D3A",
+        "btn": "#E8729A"
+      },
+      "dark": {
+        "bg": "#1A0610",
+        "text": "#FFE4EC",
+        "btn": "#F9A8C8"
+      },
+      "grad": {
+        "from": "#D64276",
+        "to": "#F9C4D8"
+      }
+    },
+    {
+      "id": 34,
+      "nameAr": "جينز عتيق",
+      "nameEn": "Vintage Denim",
+      "light": {
+        "bg": "#F8FAFC",
+        "text": "#1E293B",
+        "btn": "#3B82F6"
+      },
+      "dark": {
+        "bg": "#050D1A",
+        "text": "#F1F5F9",
+        "btn": "#60A5FA"
+      },
+      "grad": {
+        "from": "#2563EB",
+        "to": "#93C5FD"
+      }
+    },
+    {
+      "id": 35,
+      "nameAr": "نعناع نيون",
+      "nameEn": "Neon Mint",
+      "light": {
+        "bg": "#FAFAFA",
+        "text": "#171717",
+        "btn": "#14B8A6"
+      },
+      "dark": {
+        "bg": "#0A0A0A",
+        "text": "#FAFAFA",
+        "btn": "#2DD4BF"
+      },
+      "grad": {
+        "from": "#0D9488",
+        "to": "#5EEAD4"
+      }
+    },
+    {
+      "id": 36,
+      "nameAr": "أسود وذهب",
+      "nameEn": "Black & Gold",
+      "light": {
+        "bg": "#FAFAFA",
+        "text": "#000000",
+        "btn": "#D97706"
+      },
+      "dark": {
+        "bg": "#000000",
+        "text": "#FFFFFF",
+        "btn": "#F59E0B"
+      },
+      "grad": {
+        "from": "#B45309",
+        "to": "#FCD34D"
+      }
+    },
+    {
+      "id": 37,
+      "nameAr": "أميثيست",
+      "nameEn": "Amethyst",
+      "light": {
+        "bg": "#FAF5FF",
+        "text": "#4C1D95",
+        "btn": "#7C3AED"
+      },
+      "dark": {
+        "bg": "#1A052E",
+        "text": "#F3E8FF",
+        "btn": "#8B5CF6"
+      },
+      "grad": {
+        "from": "#6D28D9",
+        "to": "#A78BFA"
+      }
+    },
+    {
+      "id": 38,
+      "nameAr": "بطيخ منعش",
+      "nameEn": "Fresh Watermelon",
+      "light": {
+        "bg": "#F0FFF4",
+        "text": "#1A4731",
+        "btn": "#38A169"
+      },
+      "dark": {
+        "bg": "#0A1A12",
+        "text": "#C6F6D5",
+        "btn": "#68D391"
+      },
+      "grad": {
+        "from": "#276749",
+        "to": "#9AE6B4"
+      }
+    },
+    {
+      "id": 39,
+      "nameAr": "خلية نحل",
+      "nameEn": "Honeycomb",
+      "light": {
+        "bg": "#FFFBEB",
+        "text": "#78350F",
+        "btn": "#D97706"
+      },
+      "dark": {
+        "bg": "#1A0C02",
+        "text": "#FEF3C7",
+        "btn": "#F59E0B"
+      },
+      "grad": {
+        "from": "#92400E",
+        "to": "#FDE68A"
+      }
+    },
+    {
+      "id": 40,
+      "nameAr": "بحر هائج",
+      "nameEn": "Stormy Sea",
+      "light": {
+        "bg": "#F1F5F9",
+        "text": "#0F172A",
+        "btn": "#334155"
+      },
+      "dark": {
+        "bg": "#01050A",
+        "text": "#F1F5F9",
+        "btn": "#475569"
+      },
+      "grad": {
+        "from": "#1E293B",
+        "to": "#64748B"
+      }
+    },
+    {
+      "id": 41,
+      "nameAr": "مارشميلو",
+      "nameEn": "Marshmallow",
+      "light": {
+        "bg": "#FAFAFA",
+        "text": "#3F3F46",
+        "btn": "#A1A1AA"
+      },
+      "dark": {
+        "bg": "#0D0D0E",
+        "text": "#FAFAFA",
+        "btn": "#D4D4D8"
+      },
+      "grad": {
+        "from": "#71717A",
+        "to": "#E4E4E7"
+      }
+    },
+    {
+      "id": 42,
+      "nameAr": "فستق حلبي",
+      "nameEn": "Pistachio",
+      "light": {
+        "bg": "#F0FDF4",
+        "text": "#14532D",
+        "btn": "#22C55E"
+      },
+      "dark": {
+        "bg": "#021A0A",
+        "text": "#DCFCE7",
+        "btn": "#4ADE80"
+      },
+      "grad": {
+        "from": "#15803D",
+        "to": "#86EFAC"
+      }
+    },
+    {
+      "id": 43,
+      "nameAr": "شعاب مرجانية",
+      "nameEn": "Coral Reef",
+      "light": {
+        "bg": "#FFF5F0",
+        "text": "#7C2D12",
+        "btn": "#F97316"
+      },
+      "dark": {
+        "bg": "#1A0804",
+        "text": "#FFEDD5",
+        "btn": "#FB923C"
+      },
+      "grad": {
+        "from": "#EA580C",
+        "to": "#FDBA74"
+      }
+    },
+    {
+      "id": 44,
+      "nameAr": "ليل ساحر",
+      "nameEn": "Enchanted Night",
+      "light": {
+        "bg": "#F5F3FF",
+        "text": "#1E1B4B",
+        "btn": "#6366F1"
+      },
+      "dark": {
+        "bg": "#030712",
+        "text": "#E0E7FF",
+        "btn": "#818CF8"
+      },
+      "grad": {
+        "from": "#4338CA",
+        "to": "#A78BFA"
+      }
+    },
+    {
+      "id": 45,
+      "nameAr": "شمس البحر",
+      "nameEn": "Sea Sun",
+      "light": {
+        "bg": "#FFFBEB",
+        "text": "#0C4A6E",
+        "btn": "#0EA5E9"
+      },
+      "dark": {
+        "bg": "#042F2E",
+        "text": "#FEF9C3",
+        "btn": "#FBBF24"
+      },
+      "grad": {
+        "from": "#0E7490",
+        "to": "#FACC15"
+      }
+    }
+  ]
+}

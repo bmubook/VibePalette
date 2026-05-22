@@ -1,0 +1,21 @@
+{
+  "name": "VibePalette — AI Color Palettes",
+  "short_name": "VibePalette",
+  "description": "AI-ready color palettes with Light/Dark mode, WCAG checker, and multi-format export.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#05051A",
+  "theme_color": "#6366F1",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
