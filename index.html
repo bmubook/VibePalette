@@ -68,8 +68,20 @@
         @keyframes heartBeat { 0%{transform:scale(1)} 30%{transform:scale(1.3)} 60%{transform:scale(0.9)} 100%{transform:scale(1)} }
 
         /* Toast */
-        .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px); opacity: 0; transition: all 0.4s ease; z-index: 9999; pointer-events: none; }
-        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast { 
+            position: fixed; 
+            bottom: 2.5rem; 
+            left: 50%; 
+            transform: translateX(-50%) translateY(30px); 
+            opacity: 0; 
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease; 
+            z-index: 9999; 
+            pointer-events: none; 
+        }
+        .toast.show { 
+            transform: translateX(-50%) translateY(0); 
+            opacity: 1; 
+        }
 
         /* Color swatches */
         .swatch { width: 2.75rem; height: 2.75rem; border-radius: 0.75rem; border: 2px solid rgba(128,128,128,0.2); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
@@ -86,6 +98,64 @@
         .cb-protanopia { filter: url(#protanopia); }
         .cb-deuteranopia { filter: url(#deuteranopia); }
         .cb-tritanopia { filter: url(#tritanopia); }
+
+        /* Custom backgrounds */
+        .dots-bg {
+            position: fixed; inset: 0;
+            background-image: radial-gradient(rgba(128,128,128,0.18) 1.2px, transparent 1.2px);
+            background-size: 24px 24px;
+            z-index: -1; pointer-events: none;
+            opacity: 0.7;
+            transition: opacity 0.5s ease;
+        }
+        .mesh-bg {
+            position: fixed; inset: 0;
+            overflow: hidden;
+            z-index: -1; pointer-events: none;
+        }
+        .mesh-blob {
+            position: absolute;
+            width: 40vw; height: 40vw;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.12;
+            mix-blend-mode: multiply;
+            animation: floatBlob 16s ease-in-out infinite alternate;
+        }
+        .is-dark .mesh-blob { opacity: 0.20; mix-blend-mode: screen; filter: blur(140px); }
+        .mesh-blob-1 { top: -10%; left: 10%; animation-delay: 0s; }
+        .mesh-blob-2 { bottom: -10%; right: 10%; animation-delay: -4s; }
+        .mesh-blob-3 { top: 40%; left: 50%; animation-delay: -8s; }
+        @keyframes floatBlob {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(8%, 12%) scale(1.15); }
+            100% { transform: translate(-5%, -8%) scale(0.9); }
+        }
+        .waves-container {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 250px;
+            z-index: -1; pointer-events: none; opacity: 0.12;
+            transition: opacity 0.5s ease;
+        }
+        .is-dark .waves-container { opacity: 0.22; }
+        .wave-svg { width: 100%; height: 100%; }
+        .wave-path {
+            animation: waveAnim 12s linear infinite;
+            transform-origin: center bottom;
+        }
+        @keyframes waveAnim {
+            0% { transform: translateX(0) translateZ(0) scaleY(1); }
+            50% { transform: translateX(-25%) translateZ(0) scaleY(1.05); }
+            100% { transform: translateX(-50%) translateZ(0) scaleY(1); }
+        }
+        @keyframes gentle-pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+            50% { transform: scale(1.08); box-shadow: 0 0 10px 4px rgba(99, 102, 241, 0.2); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+        }
+        .button-pulse {
+            animation: gentle-pulse 1s ease-in-out infinite;
+            border-color: rgba(99, 102, 241, 0.6) !important;
+        }
     </style>
 </head>
 <body class="h-screen flex flex-col overflow-hidden"
@@ -95,7 +165,28 @@
       :style="`background-color: ${currentBg}; color: ${currentText}`"
       x-effect="document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr'; document.documentElement.lang = lang;">
 
-    <div class="glow-bg" x-show="currentPalette" :style="currentPalette ? `background: radial-gradient(circle, ${currentPalette.grad.from}, ${currentPalette.grad.to})` : ''"></div>
+    <!-- ✨ Glow Background -->
+    <div x-show="currentPalette && bgStyle === 'glow'" x-cloak style="display: none;">
+        <div class="glow-bg" :style="currentPalette ? `background: radial-gradient(circle, ${currentPalette.grad.from}, ${currentPalette.grad.to})` : ''"></div>
+    </div>
+
+    <!-- 🌌 Fluid Mesh Background -->
+    <div class="mesh-bg" x-show="currentPalette && bgStyle === 'mesh'">
+        <div class="mesh-blob mesh-blob-1" :style="`background: ${currentPalette.grad.from}`"></div>
+        <div class="mesh-blob mesh-blob-2" :style="`background: ${currentPalette.grad.to}`"></div>
+        <div class="mesh-blob mesh-blob-3" :style="`background: ${isDark ? currentPalette.dark.btn : currentPalette.light.btn}`"></div>
+    </div>
+
+    <!-- ░ Developer Dot Grid Background -->
+    <div class="dots-bg" x-show="currentPalette && bgStyle === 'dots'"></div>
+
+    <!-- 🌊 Fluid Waves Background -->
+    <div class="waves-container" x-show="currentPalette && bgStyle === 'waves'">
+        <svg class="wave-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
+            <path class="wave-path" :fill="currentPalette.grad.from" fill-opacity="0.15" d="M0,192L48,197.3C96,203,192,213,288,197.3C384,181,480,139,576,138.7C672,139,768,181,864,186.7C960,192,1056,160,1152,138.7C1248,117,1344,107,1392,101.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+            <path class="wave-path" :fill="currentPalette.grad.to" fill-opacity="0.1" d="M0,128L48,144C96,160,192,192,288,186.7C384,181,480,139,576,144C672,149,768,203,864,197.3C960,192,1056,128,1152,122.7C1248,117,1344,171,1392,197L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z" style="animation-delay: -3s; animation-duration: 9s;"></path>
+        </svg>
+    </div>
 
     <!-- Toast Notification -->
     <div class="toast px-6 py-3 rounded-2xl font-bold text-white shadow-2xl text-sm"
@@ -126,6 +217,47 @@
                         :style="`border-color: ${currentBtn}; color: ${currentBtn}`" :title="lang === 'ar' ? 'نسخ رابط اللوحة' : 'Copy palette link'">
                     <span>🔗</span>
                 </button>
+                <!-- Reset button -->
+                <button @click="resetUi()" class="px-3 py-2 rounded-full text-sm border transition flex items-center gap-1"
+                        :style="`border-color: ${currentBtn}; color: ${currentBtn}`" :title="lang === 'ar' ? 'إعادة تعيين الافتراضيات' : 'Reset Defaults'">
+                    <span>🔄</span>
+                </button>
+                <!-- Background customizer dropdown -->
+                <div class="relative" x-data="{ isOpen: false }" @click.outside="isOpen = false">
+                    <button @click="isOpen = !isOpen" 
+                            class="px-3 py-2 rounded-full text-sm border transition flex items-center gap-1"
+                            :class="pulseBtn ? 'button-pulse' : ''"
+                            :style="`border-color: ${currentBtn}; color: ${currentBtn}`" 
+                            :title="lang === 'ar' ? 'نمط الخلفية' : 'Background Style'">
+                        <span>🖼️</span>
+                    </button>
+
+                    <!-- Glassmorphic Dropdown -->
+                    <div class="absolute right-0 mt-2 w-48 rounded-2xl shadow-2xl z-[100] border"
+                         x-show="isOpen" x-cloak
+                         style="display: none;">
+                        <div class="p-2 backdrop-blur-xl rounded-2xl"
+                             :style="`background: ${isDark ? 'rgba(5, 5, 26, 0.85)' : 'rgba(255, 255, 255, 0.85)'}; border-color: ${currentBtn}33; color: ${currentText}`">
+                            <div class="text-[0.65rem] font-bold opacity-50 px-3 py-1.5 border-b" :style="`border-color: ${currentBtn}15`" x-text="lang === 'ar' ? 'أنماط الخلفية' : 'Background Styles'"></div>
+                            <template x-for="styleOpt in [
+                                { id: 'glow', ar: '✨ توهج هادئ', en: '✨ Glow Aura' },
+                                { id: 'mesh', ar: '🌌 تموج مائع', en: '🌌 Fluid Mesh' },
+                                { id: 'dots', ar: '░ شبكة هندسية', en: '░ Dot Grid' },
+                                { id: 'waves', ar: '🌊 أمواج سائلة', en: '🌊 Fluid Waves' },
+                                { id: 'solid', ar: '🎨 وضع بسيط مسطح', en: '🎨 Minimal Solid' },
+                                { id: 'none', ar: '⚪ بدون خلفية (نقي)', en: '⚪ Pure Backdrops' }
+                            ]" :key="styleOpt.id">
+                                <button @click="changeBgStyle(styleOpt.id); isOpen = false" 
+                                        class="w-full text-start px-3 py-2 rounded-xl text-xs transition flex justify-between items-center hover:bg-gray-500/10"
+                                        :style="bgStyle === styleOpt.id ? `color: ${currentBtn}; font-weight: bold; background: ${currentBtn}10` : ''">
+                                    <span x-text="lang === 'ar' ? styleOpt.ar : styleOpt.en"></span>
+                                    <span x-show="bgStyle === styleOpt.id" class="text-[0.6rem]">✓</span>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
                 <button @click="toggleLang" class="px-4 py-2 rounded-full font-bold text-sm border transition" :style="`border-color: ${currentBtn}; color: ${currentBtn}`" x-text="lang === 'ar' ? 'EN' : 'عربي'"></button>
                 <button @click="toggleDarkMode" class="w-10 h-10 rounded-full flex items-center justify-center border transition" :style="`border-color: ${currentBtn}; color: ${currentBtn}`" x-text="isDark ? '☀️' : '🌙'"></button>
             </div>

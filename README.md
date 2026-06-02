@@ -61,6 +61,8 @@
 | Multi-format Export | ✅ | ✅ | ❌ | ❌ |
 | WCAG Contrast Checker & Auto-Fix | ✅ | ✅ (Checker only) | ❌ | ❌ |
 | Color Blindness Simulator | ✅ | ✅ (Freemium) | ❌ | ❌ |
+| Dynamic Background Customizer | ✅ | ❌ | ❌ | ❌ |
+| One-Click Defaults Reset | ✅ | ❌ | ❌ | ❌ |
 | Bilingual Canvas Card Export | ✅ | ❌ | ❌ | ❌ |
 | Interactive Vibe Quiz | ✅ | ❌ | ❌ | ✅ (Basic) |
 | Offline / PWA Support | ✅ | ❌ | ❌ | ❌ |
@@ -84,6 +86,8 @@
 - **Custom JSON Palette Import** — Paste standard tokens or VibePalette formats to load custom styles
 - **Dynamic Font Pairings** — Dynamically pairs and renders matching typography (Cairo, Inter) with color systems
 - **Bilingual Canvas Card Export** — Download 1200x630 share-ready PNGs localized to your active language
+- **Dynamic Background Customizer** — Easily cycle or remove background effects (Glow Aura, Developer Dot Grid, Fluid Mesh, Moving Waves, Minimal Solid, or Pure Black/White backdrops) via a floating drop-down
+- **One-Click UI Reset** — Quickly revert all active filters, searches, color blindness simulations, active palettes, and background preferences back to default with a single click
 - **Fully Responsive & PWA** — Offline caching (Service Worker), manifest integration, and mobile-friendly design
 - **Favorites** — Save your best palettes (localStorage) with instant search and filter capabilities
 
@@ -118,6 +122,8 @@ This project is **Open Source**! Everyone is welcome to:
 - **استيراد مخصص (JSON Import)** — الصق ناتج توكنز الألوان للاستيراد المباشر للوحات المخصصة
 - **أزواج خطوط ديناميكية** — تطبيق وتنسيق ديناميكي لأزواج الخطوط المقترحة (القاهرة + إنتر) في عناصر المعاينة
 - **تصدير بطاقة مشاركة ثنائية اللغة** — توليد وتحميل صورة PNG بمقاس 1200x630 مترجمة تلقائياً للغة الواجهة
+- **مخصص الخلفيات الذكي** — تبديل أو إزالة تأثيرات الخلفية بسهولة (توهج هادئ، شبكة تقنية، تموج مائع، أمواج متحركة، وضع مسطح، أو وضع نقي أبيض/أسود بالكامل) عبر قائمة منسدلة عائمة
+- **إعادة تعيين بنقرة واحدة (Reset UI)** — إرجاع كافة التصفيات، وعمليات البحث، ومحاكي عمى الألوان، واللوحة النشطة، وتفضيلات الخلفية إلى وضعها الافتراضي الأولي بنقرة واحدة
 - **تجاوب كامل ودعم PWA** — تطبيق ويب تقدمي يعمل أوفلاين بالكامل عبر Service Worker وManifest
 - **مفضلات مع بحث سريع** — احفظ لوحاتك المفضلة للوصول الفوري مع ميزات التصفية المتقدمة
 

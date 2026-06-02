@@ -26,6 +26,9 @@ function themePreview() {
         beforeAfter: false,
         vibeStep: 0,
         vibeScores: {},
+        bgStyle: localStorage.getItem('vp_bg_style') || 'glow',
+        showBgDropdown: false,
+        pulseBtn: true,
         favorites: safeJson('vp_favs', []),
         votes: safeJson('vp_votes', {}),
         votedIds: safeJson('vp_voted', []),
@@ -109,6 +112,7 @@ function themePreview() {
             this.setupKeyboard();
             const embed = new URLSearchParams(location.search).get('embed');
             if (embed === '1') this.activeTab = 'preview';
+            setTimeout(() => { this.pulseBtn = false; }, 2000);
         },
 
         setupKeyboard() {
@@ -217,6 +221,34 @@ function themePreview() {
         toggleDarkMode() {
             this.isDark = !this.isDark;
             localStorage.setItem('vp_dark', this.isDark ? '1' : '0');
+        },
+        changeBgStyle(style) {
+            this.bgStyle = style;
+            localStorage.setItem('vp_bg_style', style);
+            this.showBgDropdown = false;
+        },
+        resetUi() {
+            this.isDark = true;
+            this.lang = 'ar';
+            this.bgStyle = 'glow';
+            this.showFavOnly = false;
+            this.colorFilter = 'all';
+            this.collectionFilter = 'all';
+            this.wcagOnly = false;
+            this.searchQuery = '';
+            this.colorBlindMode = 'none';
+            
+            // Revert to fallback/default palette (ID 8)
+            const defaultPal = this.palettes.find((p) => p.id === 8) || this.palettes[0];
+            this.selectPalette(defaultPal);
+            
+            // Update storage
+            localStorage.setItem('vp_dark', '1');
+            localStorage.setItem('vp_lang', 'ar');
+            localStorage.setItem('vp_bg_style', 'glow');
+            localStorage.removeItem('vp_palette');
+            
+            this.showToast(this.lang === 'ar' ? '✓ تم إعادة تعيين الإعدادات الافتراضية' : '✓ Defaults restored');
         },
 
         toggleLang() {
@@ -567,6 +599,9 @@ function themePreview() {
         },
 
         get currentBg() {
+            if (this.bgStyle === 'none') {
+                return this.isDark ? '#000000' : '#FFFFFF';
+            }
             if (!this.currentPalette) return '#EEF2FF';
             const p = this.displayPalette;
             return this.isDark ? p.dark.bg : p.light.bg;
