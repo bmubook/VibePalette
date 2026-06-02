@@ -537,10 +537,23 @@ function themePreview() {
             ctx.fillRect(0, 0, 1200, 630);
             ctx.fillStyle = '#fff';
             ctx.font = 'bold 56px Cairo, sans-serif';
-            ctx.fillText(p.nameEn, 60, 120);
+            
+            // Use current language name (p.nameAr or p.nameEn)
+            const name = this.lang === 'ar' ? p.nameAr : p.nameEn;
+            ctx.fillText(name, 60, 120);
+            
             ctx.font = '32px Inter, sans-serif';
-            ctx.fillText(`Light ${p.light.bg} · Dark ${p.dark.bg}`, 60, 200);
-            ctx.fillText('VibePalette — AI-Ready Colors', 60, 280);
+            
+            // Translate description inside download image based on language
+            const desc = this.lang === 'ar' 
+                ? `النهاري ${p.light.bg} · الليلي ${p.dark.bg}` 
+                : `Light ${p.light.bg} · Dark ${p.dark.bg}`;
+            const subTitle = this.lang === 'ar'
+                ? 'VibePalette — لوحات ألوان جاهزة للذكاء الاصطناعي'
+                : 'VibePalette — AI-Ready Colors';
+                
+            ctx.fillText(desc, 60, 200);
+            ctx.fillText(subTitle, 60, 280);
             [p.light.bg, p.light.btn, p.dark.bg, p.dark.btn].forEach((c, i) => {
                 ctx.fillStyle = c;
                 ctx.fillRect(60 + i * 140, 340, 120, 120);
@@ -595,7 +608,7 @@ function themePreview() {
         },
 
         getPaletteFamily(p) {
-            const hex = p.grad.from;
+            const hex = p?.grad?.from || '#6366F1';
             const [r, g, b] = ColorUtils.hexToRgb(hex);
             const max = Math.max(r, g, b),
                 min = Math.min(r, g, b);

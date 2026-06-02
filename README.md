@@ -59,8 +59,11 @@
 | Light + Dark Mode per palette | ✅ | ❌ | ❌ | ❌ |
 | RTL / Arabic Support | ✅ | ❌ | ❌ | ❌ |
 | Multi-format Export | ✅ | ✅ | ❌ | ❌ |
-| WCAG Contrast Checker | ✅ | ✅ | ❌ | ❌ |
-| Offline / No Backend | ✅ | ❌ | ❌ | ❌ |
+| WCAG Contrast Checker & Auto-Fix | ✅ | ✅ (Checker only) | ❌ | ❌ |
+| Color Blindness Simulator | ✅ | ✅ (Freemium) | ❌ | ❌ |
+| Bilingual Canvas Card Export | ✅ | ❌ | ❌ | ❌ |
+| Interactive Vibe Quiz | ✅ | ❌ | ❌ | ✅ (Basic) |
+| Offline / PWA Support | ✅ | ❌ | ❌ | ❌ |
 | Free & Open Source | ✅ | Freemium | ✅ | ✅ |
 
 ---
@@ -73,14 +76,16 @@
 
 ### ✨ Features
 - **45+ Curated Palettes** — Hand-picked tones for modern UIs
-- **Smart AI Prompts** — Full architectural guide for AI tools (ChatGPT, Cursor, Lovable, etc.)
-- **Multi-Format Export** — CSS Variables · Tailwind Config · SCSS · JSON Design Tokens
-- **WCAG Contrast Checker** — Built-in accessibility verification (AA/AAA)
-- **Rich Live Preview** — Cards, inputs, navbars, badges — all in real-time
-- **Search & Filter** — Find palettes by name or color family
-- **Favorites** — Save your best palettes (localStorage)
-- **Fully Responsive** — Beautiful on Mobile, Tablet, and Desktop
-- **Bilingual** — Arabic (RTL) ↔ English (LTR) seamless switching
+- **Smart AI Prompts** — Full architectural guide for AI tools (Cursor, Lovable, Bolt, ChatGPT, etc.)
+- **Multi-Format Export** — CSS Variables · shadcn/ui · Tailwind Config · SCSS · JSON · Figma Tokens
+- **WCAG Contrast Checker & Auto-Fix** — Built-in accessibility verification (AA/AAA) with automated color shifting to pass contrast rules
+- **Color Blindness Simulator** — Real-time simulation for Protanopia, Deuteranopia, and Tritanopia
+- **Interactive Vibe Match Quiz** — Find the perfect palette based on project type, mood, and accessibility preferences
+- **Custom JSON Palette Import** — Paste standard tokens or VibePalette formats to load custom styles
+- **Dynamic Font Pairings** — Dynamically pairs and renders matching typography (Cairo, Inter) with color systems
+- **Bilingual Canvas Card Export** — Download 1200x630 share-ready PNGs localized to your active language
+- **Fully Responsive & PWA** — Offline caching (Service Worker), manifest integration, and mobile-friendly design
+- **Favorites** — Save your best palettes (localStorage) with instant search and filter capabilities
 
 ### 🤝 Contributing
 This project is **Open Source**! Everyone is welcome to:
@@ -105,14 +110,16 @@ This project is **Open Source**! Everyone is welcome to:
 
 ### ✨ المميزات
 - **أكثر من 45 لوحة لونية** — ألوان مُهندسة بعناية للواجهات العصرية
-- **برومبتات AI هندسية** — دليل معماري كامل لأدوات الذكاء الاصطناعي
-- **تصدير متعدد الصيغ** — CSS Variables · Tailwind · SCSS · JSON Tokens
-- **فاحص تباين WCAG** — تحقق فوري من معايير الوصول (AA/AAA)
-- **معاينة حية غنية** — بطاقات، حقول إدخال، شريط تنقل، شارات
-- **بحث وتصفية** — ابحث بالاسم أو بعائلة الألوان
-- **مفضلات** — احفظ لوحاتك المفضلة (بدون تسجيل دخول)
-- **تجاوب كامل** — تعمل بشكل مثالي على الجوال والمكتبي
-- **ثنائية اللغة** — عربي (RTL) ↔ إنجليزي (LTR) بتبديل فوري
+- **برومبتات AI هندسية** — دليل معماري كامل لأدوات الذكاء الاصطناعي (Cursor, Lovable, Bolt, ChatGPT)
+- **تصدير متعدد الصيغ** — CSS Variables · shadcn/ui · Tailwind · SCSS · JSON · Figma Tokens
+- **فاحص ومصلح تباين WCAG** — تحقق فوري من معايير الوصول (AA/AAA) مع أداة تعديل ذكي للمرور تلقائياً
+- **محاكي عمى الألوان** — معاينة تفاعلية فورية لثلاث حالات شائعة (Protanopia, Deuteranopia, Tritanopia)
+- **اختبار التوافق (Vibe Match Quiz)** — ابحث عن لوحتك المثالية بناءً على طبيعة مشروعك ومزاجك ومتطلبات الوصول
+- **استيراد مخصص (JSON Import)** — الصق ناتج توكنز الألوان للاستيراد المباشر للوحات المخصصة
+- **أزواج خطوط ديناميكية** — تطبيق وتنسيق ديناميكي لأزواج الخطوط المقترحة (القاهرة + إنتر) في عناصر المعاينة
+- **تصدير بطاقة مشاركة ثنائية اللغة** — توليد وتحميل صورة PNG بمقاس 1200x630 مترجمة تلقائياً للغة الواجهة
+- **تجاوب كامل ودعم PWA** — تطبيق ويب تقدمي يعمل أوفلاين بالكامل عبر Service Worker وManifest
+- **مفضلات مع بحث سريع** — احفظ لوحاتك المفضلة للوصول الفوري مع ميزات التصفية المتقدمة
 
 ### 🤝 المساهمة
 المشروع **مفتوح المصدر**! أرحب بالجميع للمشاركة في:

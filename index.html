@@ -210,7 +210,7 @@
             <div x-show="!loading && currentPalette" class="max-w-5xl mx-auto space-y-8">
                 <!-- Hero -->
                 <section class="text-center py-4 space-y-3">
-                    <h2 class="hero-title text-3xl md:text-5xl font-black leading-tight">
+                    <h2 class="hero-title text-3xl md:text-5xl font-black leading-tight" :style="`font-family: '${getFontPairing(currentPalette).h}', sans-serif`">
                         <span x-text="lang === 'ar' ? 'صمم واجهاتك بـ' : 'Design your UI with'"></span> <br>
                         <span class="text-transparent bg-clip-text" :style="`background-image: linear-gradient(to left, ${displayPalette.grad.from}, ${displayPalette.grad.to})`"
                               x-text="lang === 'ar' ? 'فايب احترافي' : 'Professional Vibe'"></span>
@@ -259,7 +259,7 @@
                 </section>
 
                 <!-- Rich Preview -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-10">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-10" :style="`font-family: '${getFontPairing(currentPalette).b}', sans-serif`">
                     <!-- Preview Components -->
                     <div class="space-y-4">
                         <!-- Buttons -->
@@ -288,7 +288,7 @@
                     <!-- Card Preview -->
                     <div class="p-6 rounded-[2rem] border-2 flex flex-col justify-between backdrop-blur-sm" :style="`border-color: ${currentPalette.grad.from}44; background: ${currentPalette.grad.from}05`">
                         <div class="h-32 rounded-2xl shadow-2xl mb-3" :style="`background: linear-gradient(135deg, ${displayPalette.grad.from}, ${displayPalette.grad.to})`"></div>
-                        <h4 class="text-lg font-black" x-text="lang === 'ar' ? currentPalette.nameAr : currentPalette.nameEn"></h4>
+                        <h4 class="text-lg font-black" :style="`font-family: '${getFontPairing(currentPalette).h}', sans-serif`" x-text="lang === 'ar' ? currentPalette.nameAr : currentPalette.nameEn"></h4>
                         <p class="text-xs opacity-60 mt-1" x-text="lang === 'ar' ? 'معاينة حية للألوان على عناصر واقعية' : 'Live preview of colors on real UI elements'"></p>
                         <!-- WCAG Detail -->
                         <div class="mt-3 p-3 rounded-xl text-xs space-y-1.5" :style="`background: ${currentBtn}08; border: 1px solid ${currentBtn}22`">
@@ -319,9 +319,9 @@
                 </div>
 
                 <!-- Dashboard Preview -->
-                <section class="p-5 md:p-6 rounded-3xl border backdrop-blur-md space-y-4" style="border-color: rgba(128,128,128,0.15); background: rgba(128,128,128,0.05)">
+                <section class="p-5 md:p-6 rounded-3xl border backdrop-blur-md space-y-4" style="border-color: rgba(128,128,128,0.15); background: rgba(128,128,128,0.05)" :style="`font-family: '${getFontPairing(currentPalette).b}', sans-serif`">
                     <div class="flex flex-wrap items-center justify-between gap-2">
-                        <h3 class="font-black text-sm md:text-base" x-text="lang === 'ar' ? '📊 معاينة لوحة تحكم' : '📊 Dashboard Preview'"></h3>
+                        <h3 class="font-black text-sm md:text-base" :style="`font-family: '${getFontPairing(currentPalette).h}', sans-serif`" x-text="lang === 'ar' ? '📊 معاينة لوحة تحكم' : '📊 Dashboard Preview'"></h3>
                         <button x-show="isCustomPalette(currentPalette)" @click="removeCustomPalette()"
                                 class="text-xs font-bold px-3 py-1 rounded-lg border text-red-500 border-red-400/40"
                                 x-text="lang === 'ar' ? '🗑 حذف المخصصة' : '🗑 Delete custom'"></button>
@@ -533,6 +533,5 @@
 
     <script src="color-utils.js"></script>
     <script src="app.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </body>
 </html>
